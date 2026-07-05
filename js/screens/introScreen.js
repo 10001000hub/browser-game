@@ -1,4 +1,5 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
+import { playSfx } from "../engine/sfx.js";
 
 /**
  * 導入会話シーン（赤坂 GitHub 店）
@@ -140,7 +141,10 @@ export function mount(root, context) {
     };
 
     pendingTimers.push(window.setTimeout(() => flash.classList.add("is-flashing"), 500));
-    pendingTimers.push(window.setTimeout(() => text.classList.add("is-revealed"), 550));
+    pendingTimers.push(window.setTimeout(() => {
+      text.classList.add("is-revealed");
+      playSfx("reveal");
+    }, 550));
     pendingTimers.push(window.setTimeout(() => text.classList.add("is-glowing"), 1050));
     pendingTimers.push(window.setTimeout(advance, 2200));
 
@@ -159,6 +163,7 @@ export function mount(root, context) {
       <p class="battle-start__store">${escapeHtml(storeName)}</p>
       <p class="battle-start__label">BATTLE START</p>
     `;
+    playSfx("battleStart");
 
     let advanced = false;
     const advance = () => {

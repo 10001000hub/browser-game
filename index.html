@@ -19,6 +19,11 @@
   </svg>
   <div id="stamina-time" class="stamina-time" role="timer" aria-live="off">0:00</div>
 
+  <!-- 効果音ミュート切り替え（常時表示。状態はlocalStorageに永続化） -->
+  <button id="mute-toggle" class="mute-toggle" type="button" aria-pressed="false" aria-label="効果音をオフにする">
+    <span class="mute-toggle__icon" aria-hidden="true">🔊</span>
+  </button>
+
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,1 @@
+{"id":"int-260913e4","kind":"field_change","created_at":"2026-07-05T09:34:59.483842371Z","actor":"10001000hub","issue_id":"browser-game-fah","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Web Audioオシレーター合成でplaySfx実装。correct/incorrect/reveal/battleStart/timeout/mash/win/lose の8種＋ミュートボタン（localStorage永続化）＋モバイル自動再生制限対応(unlockAudio)"}}

@@ -1182,3 +1182,40 @@ body {
 [data-heat="critical"] .stamina-time {
   color: var(--color-critical);
 }
+
+/* =========================================================
+   6. 効果音ミュートボタン
+   ========================================================= */
+.mute-toggle {
+  position: fixed;
+  top: max(env(safe-area-inset-top), var(--space-2));
+  right: max(env(safe-area-inset-right), var(--space-3));
+  z-index: var(--z-toast);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-text);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.mute-toggle:hover {
+  opacity: 1;
+}
+.mute-toggle:active {
+  transform: scale(0.92);
+}
+.mute-toggle[aria-pressed="true"] {
+  opacity: 0.5;
+}
+.mute-toggle:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}

@@ -3,6 +3,7 @@ import { githubQuestions } from "./data/questions-github.js";
 import { TEMP_CONFIG } from "./data/tempConfig.js";
 import { shuffleArray, selectTenQuestions, isCorrectChoice } from "./engine/quizPicker.js";
 import { createTimer } from "./engine/timer.js";
+import { playSfx, unlockAudio, isMuted, toggleMute } from "./engine/sfx.js";
 import * as titleScreen from "./screens/titleScreen.js";
 import * as storeSelectScreen from "./screens/storeSelectScreen.js";
 import * as tempSelectScreen from "./screens/tempSelectScreen.js";
@@ -16,11 +17,6 @@ import * as reviewScreen from "./screens/reviewScreen.js";
 const questionPools = {
   github: githubQuestions,
 };
-
-/** 効果音フック（未実装。将来ここにAudio再生処理を差し込む） */
-function playSfx(_name) {
-  // no-op（MVPでは効果音未実装）
-}
 
 let screenRoot = null;
 let ringEl = null;
@@ -249,6 +245,7 @@ function handleAdvance() {
 
 function handleTimerExpire() {
   if (state.phase !== "QUIZ") return;
+  playSfx("timeout");
   if (!state.revivalUsed) {
     goToContinue();
   } else {
@@ -278,6 +275,7 @@ function goToResult(didWin) {
   state.phase = "RESULT";
   if (state.timerController) state.timerController.stop();
   setRingVisible(false);
+  playSfx(didWin ? "win" : "lose");
   mountScreen(resultScreen.mount, {
     didWin,
     reviewLog: state.reviewLog,
@@ -307,7 +305,44 @@ export function initGame(rootElement) {
   window.addEventListener("resize", updateRingGeometry);
   window.addEventListener("orientationchange", updateRingGeometry);
 
+  setupAudioUnlock();
+  setupMuteToggle();
+
   goToTitle();
+}
+
+/**
+ * モバイルの自動再生制限対策。最初のユーザー操作でAudioContextをresumeする。
+ * once相当（解放後は自身でリスナーを外す）。
+ */
+function setupAudioUnlock() {
+  const unlock = () => {
+    unlockAudio();
+    window.removeEventListener("pointerdown", unlock);
+    window.removeEventListener("keydown", unlock);
+    window.removeEventListener("touchstart", unlock);
+  };
+  window.addEventListener("pointerdown", unlock);
+  window.addEventListener("keydown", unlock);
+  window.addEventListener("touchstart", unlock);
+}
+
+/** ミュート切り替えボタンの初期表示と操作を配線する。 */
+function setupMuteToggle() {
+  const btn = document.getElementById("mute-toggle");
+  if (!btn) return;
+  const iconEl = btn.querySelector(".mute-toggle__icon");
+  const render = () => {
+    const m = isMuted();
+    btn.setAttribute("aria-pressed", String(m));
+    btn.setAttribute("aria-label", m ? "効果音をオンにする" : "効果音をオフにする");
+    if (iconEl) iconEl.textContent = m ? "🔇" : "🔊";
+  };
+  render();
+  btn.addEventListener("click", () => {
+    toggleMute();
+    render();
+  });
 }
 
 if (typeof document !== "undefined") {

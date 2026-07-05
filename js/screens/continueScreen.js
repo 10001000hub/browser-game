@@ -7,6 +7,8 @@
  * @param {{ onSuccess: () => void, onFail: () => void }} context
  * @returns {{ unmount: () => void }}
  */
+import { playSfx } from "../engine/sfx.js";
+
 const WINDOW_MS = 10_000;
 const TARGET_CLICKS = 30;
 
@@ -58,6 +60,7 @@ export function mount(root, context) {
     const elapsed = performance.now() - windowStart;
     if (elapsed >= WINDOW_MS) return;
     clickCount += 1;
+    playSfx("mash");
     updateMashUI();
     if (clickCount >= TARGET_CLICKS) {
       resolved = true;
