@@ -1,5 +1,5 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
-import { playSfx, playVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
+import { playSfx, playVoice, preloadVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
 
 /**
  * 導入会話シーン（店舗名・テーマは選択店舗に応じて差し替え）
@@ -14,6 +14,9 @@ import { playSfx, playVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
 export function mount(root, context) {
   const section = document.createElement("section");
   root.appendChild(section);
+
+  // 「俺がまさおだ」reveal 演出のボイスを、演出到達前に事前ロードしておく（発音遅延の防止）
+  preloadVoice(VOICE_MASAO);
 
   const storeName = context.selectedStore ? context.selectedStore.displayName : "赤坂 GitHub 店";
   const themeName = context.selectedStore ? context.selectedStore.themeName : "GitHub";

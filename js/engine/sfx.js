@@ -176,6 +176,28 @@ export const VOICE_MASAO = "assets/audio/osumasaodesu.mp4";
 /** @type {HTMLAudioElement|null} 再生中のボイス（多重再生を防ぐため単一参照で管理） */
 let voiceAudio = null;
 
+/** @type {Map<string, HTMLAudioElement>} プリロード済みボイス要素（即時再生のため再利用する） */
+const voiceCache = new Map();
+
+/**
+ * ボイスクリップを事前ロードしておき、後続の {@link playVoice} を即時発音にする。
+ * 再生直前ではなく、余裕のあるタイミング（対象画面のマウント時など）で呼ぶこと。
+ * ミュートに関係なくロードだけ行う（実際の発音は playVoice が判定する）。
+ * @param {string} src
+ */
+export function preloadVoice(src) {
+  if (typeof Audio === "undefined") return;
+  if (voiceCache.has(src)) return;
+  try {
+    const el = new Audio(src);
+    el.preload = "auto";
+    el.load();
+    voiceCache.set(src, el);
+  } catch (_e) {
+    /* noop */
+  }
+}
+
 /**
  * ボイスクリップを再生する。ミュート時・Audio 非対応環境（jsdom 等）では何もしない。
  * 再生中の別ボイスがあれば停止してから再生する。
@@ -185,8 +207,18 @@ export function playVoice(src) {
   stopVoice();
   if (muted || typeof Audio === "undefined") return;
   try {
-    voiceAudio = new Audio(src);
-    const p = voiceAudio.play();
+    let el = voiceCache.get(src);
+    if (!el) {
+      el = new Audio(src);
+      voiceCache.set(src, el);
+    }
+    try {
+      el.currentTime = 0;
+    } catch (_e) {
+      /* 未ロード等で seek 不可なら無視 */
+    }
+    voiceAudio = el;
+    const p = el.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
   } catch (_e) {
     voiceAudio = null;
