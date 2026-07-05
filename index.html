@@ -2,15 +2,23 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Browser Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>俺がまさお</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main id="game-container">
-    <h1>Browser Game</h1>
-    <canvas id="game-canvas" width="800" height="600"></canvas>
-  </main>
-  <script src="js/main.js"></script>
+<body data-heat="normal">
+  <div id="app" class="app">
+    <div id="screen-root"></div>
+  </div>
+
+  <!-- サウナ耐久リング: 常時DOMに存在し、quiz-battle / continue 中のみ可視化 -->
+  <svg id="stamina-ring" class="stamina-ring" aria-hidden="true">
+    <path class="stamina-ring__glow" pathLength="100"></path>
+    <path class="stamina-ring__track" pathLength="100"></path>
+    <path class="stamina-ring__progress" pathLength="100"></path>
+  </svg>
+  <div id="stamina-time" class="stamina-time" role="timer" aria-live="off">0:00</div>
+
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

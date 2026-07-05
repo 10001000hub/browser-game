@@ -1,16 +1,317 @@
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
+import { stores } from "./data/stores.js";
+import { githubQuestions } from "./data/questions-github.js";
+import { TEMP_CONFIG } from "./data/tempConfig.js";
+import { shuffleArray, selectTenQuestions, isCorrectChoice } from "./engine/quizPicker.js";
+import { createTimer } from "./engine/timer.js";
+import * as titleScreen from "./screens/titleScreen.js";
+import * as storeSelectScreen from "./screens/storeSelectScreen.js";
+import * as tempSelectScreen from "./screens/tempSelectScreen.js";
+import * as introScreen from "./screens/introScreen.js";
+import * as quizScreen from "./screens/quizScreen.js";
+import * as continueScreen from "./screens/continueScreen.js";
+import * as resultScreen from "./screens/resultScreen.js";
+import * as reviewScreen from "./screens/reviewScreen.js";
 
-function gameLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+/** 店舗IDごとの出題プール。GitHub店のみMVPで実装済み。 */
+const questionPools = {
+  github: githubQuestions,
+};
 
-  // ここにゲームの描画・更新処理を書く
-  ctx.fillStyle = '#e94560';
-  ctx.font = '24px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('Game Start!', canvas.width / 2, canvas.height / 2);
-
-  requestAnimationFrame(gameLoop);
+/** 効果音フック（未実装。将来ここにAudio再生処理を差し込む） */
+function playSfx(_name) {
+  // no-op（MVPでは効果音未実装）
 }
 
-gameLoop();
+let screenRoot = null;
+let ringEl = null;
+let timeEl = null;
+let bodyEl = null;
+let currentUnmount = null;
+
+/** 現在の耐久リング表示の分母（100%とみなす残り時間）。start/revive時に更新。 */
+let segmentDurationMs = 0;
+
+/** @returns {import('./engine/timer.js').TimerController|null} */
+function freshState() {
+  return {
+    phase: "TITLE",
+    selectedStore: null,
+    tempMode: null,
+    quizSet: [],
+    currentQuestionIndex: 0,
+    currentChoiceOrder: [],
+    wrongChoicesThisQuestion: new Set(),
+    reviewLog: [],
+    revivalUsed: false,
+    timerController: null,
+    locked: false,
+  };
+}
+
+let state = freshState();
+
+function mountScreen(mountFn, context) {
+  if (currentUnmount) {
+    currentUnmount();
+    currentUnmount = null;
+  }
+  if (screenRoot) {
+    screenRoot.innerHTML = "";
+  }
+  const { unmount } = mountFn(screenRoot, context);
+  currentUnmount = unmount;
+}
+
+function setRingVisible(visible) {
+  if (!ringEl || !timeEl) return;
+  ringEl.classList.toggle("is-visible", visible);
+  timeEl.classList.toggle("is-visible", visible);
+}
+
+function updateRingGeometry() {
+  if (!ringEl) return;
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const sw = 6;
+  const d = `M ${W / 2},${sw / 2} H ${W - sw / 2} V ${H - sw / 2} H ${sw / 2} V ${sw / 2} Z`;
+  ringEl.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  ringEl.querySelectorAll("path").forEach((p) => p.setAttribute("d", d));
+}
+
+function updateRingUI(remainingMs) {
+  if (!ringEl || !timeEl || !bodyEl) return;
+  const pct = segmentDurationMs > 0 ? Math.max(0, Math.min(100, (remainingMs / segmentDurationMs) * 100)) : 0;
+  const offset = 100 - pct;
+  ringEl.querySelectorAll(".stamina-ring__progress, .stamina-ring__glow").forEach((p) => {
+    p.style.strokeDashoffset = String(offset);
+  });
+
+  const totalSeconds = Math.ceil(remainingMs / 1000);
+  const mm = Math.floor(totalSeconds / 60);
+  const ss = totalSeconds % 60;
+  timeEl.textContent = `${mm}:${String(ss).padStart(2, "0")}`;
+
+  let heat = "normal";
+  if (pct <= 9) heat = "critical";
+  else if (pct <= 29) heat = "danger";
+  else if (pct <= 59) heat = "warm";
+  bodyEl.dataset.heat = heat;
+}
+
+/* ---------------- 画面遷移 ---------------- */
+
+function goToTitle() {
+  state = freshState();
+  setRingVisible(false);
+  if (bodyEl) bodyEl.dataset.heat = "normal";
+  mountScreen(titleScreen.mount, { onStart: goToStoreSelect });
+}
+
+function goToStoreSelect() {
+  state.phase = "STORE_SELECT";
+  mountScreen(storeSelectScreen.mount, {
+    stores,
+    onSelectStore(storeId) {
+      const store = stores.find((s) => s.id === storeId);
+      if (!store || store.status !== "available") return;
+      state.selectedStore = store;
+      goToTempSelect();
+    },
+    onBack() {
+      state.selectedStore = null;
+      goToTitle();
+    },
+  });
+}
+
+function goToTempSelect() {
+  state.phase = "TEMP_SELECT";
+  mountScreen(tempSelectScreen.mount, {
+    onSelectTemp(tempMode) {
+      state.tempMode = tempMode;
+      goToIntro();
+    },
+    onBack() {
+      state.tempMode = null;
+      goToStoreSelect();
+    },
+  });
+}
+
+function goToIntro() {
+  state.phase = "INTRO";
+  mountScreen(introScreen.mount, {
+    selectedStore: state.selectedStore,
+    tempMode: state.tempMode,
+    onStartQuiz: startQuiz,
+  });
+}
+
+function startQuiz() {
+  const pool = questionPools[state.selectedStore.questionPoolId] || [];
+  state.quizSet = selectTenQuestions(pool);
+  state.currentQuestionIndex = 0;
+  state.reviewLog = new Array(state.quizSet.length).fill(null);
+  state.revivalUsed = false;
+  state.wrongChoicesThisQuestion = new Set();
+  state.currentChoiceOrder = state.quizSet.length
+    ? shuffleArray(state.quizSet[0].choices)
+    : [];
+  state.locked = false;
+  state.phase = "QUIZ";
+
+  const config = TEMP_CONFIG[state.tempMode];
+  segmentDurationMs = config.durationMs;
+  state.timerController = createTimer({
+    durationMs: config.durationMs,
+    onTick: updateRingUI,
+    onExpire: handleTimerExpire,
+  });
+  setRingVisible(true);
+  state.timerController.start();
+  mountQuizScreen();
+}
+
+function mountQuizScreen() {
+  const question = state.quizSet[state.currentQuestionIndex];
+  mountScreen(quizScreen.mount, {
+    question,
+    choiceOrder: state.currentChoiceOrder,
+    wrongChoices: state.wrongChoicesThisQuestion,
+    questionNumber: state.currentQuestionIndex + 1,
+    totalQuestions: state.quizSet.length,
+    tempMode: state.tempMode,
+    onChoiceClick: handleChoiceClick,
+    onAdvance: handleAdvance,
+  });
+}
+
+/**
+ * 4章・5章の判定ロジック本体。画面(quizScreen)からの唯一の入口。
+ * @param {string} text
+ */
+function handleChoiceClick(text) {
+  if (state.locked) return { ignored: true };
+  if (state.phase !== "QUIZ") return { ignored: true }; // エッジケース#2
+  if (state.wrongChoicesThisQuestion.has(text)) return { ignored: true }; // エッジケース#6
+
+  const question = state.quizSet[state.currentQuestionIndex];
+  const correct = isCorrectChoice(question, text);
+  const isFirstAttempt =
+    state.wrongChoicesThisQuestion.size === 0 && !state.reviewLog[state.currentQuestionIndex];
+
+  if (isFirstAttempt) {
+    state.reviewLog[state.currentQuestionIndex] = {
+      index: state.currentQuestionIndex + 1,
+      statement: question.fakeMasaoLine,
+      firstAnswer: text,
+      correctAnswer: question.correctChoice,
+      isFirstAnswerCorrect: correct,
+      explanation: question.reviewExplanation,
+      topic: question.topic,
+      sourceMemo: question.sourceMemo,
+    };
+  }
+
+  if (correct) {
+    state.locked = true; // エッジケース#1・#3: 正解確定時点で二重発火をロックし、タイマーも即座に止める
+    const isLastQuestion = state.currentQuestionIndex === state.quizSet.length - 1;
+    if (isLastQuestion) {
+      state.timerController.stop();
+    }
+    playSfx("correct");
+    return { correct: true, line: question.successLine, isLastQuestion };
+  }
+
+  state.wrongChoicesThisQuestion.add(text);
+  state.timerController.applyPenalty(TEMP_CONFIG[state.tempMode].penaltyMs);
+  playSfx("incorrect");
+  return { correct: false, line: question.failureLine };
+}
+
+/** 正解フィードバック表示後、quizScreenから呼ばれる */
+function handleAdvance() {
+  const wasLast = state.currentQuestionIndex === state.quizSet.length - 1;
+  if (wasLast) {
+    goToResult(true);
+    return;
+  }
+  state.currentQuestionIndex += 1;
+  state.wrongChoicesThisQuestion = new Set();
+  state.currentChoiceOrder = shuffleArray(state.quizSet[state.currentQuestionIndex].choices);
+  state.locked = false;
+  mountQuizScreen();
+}
+
+function handleTimerExpire() {
+  if (state.phase !== "QUIZ") return;
+  if (!state.revivalUsed) {
+    goToContinue();
+  } else {
+    goToResult(false);
+  }
+}
+
+function goToContinue() {
+  state.phase = "CONTINUE";
+  state.revivalUsed = true; // 7.2: 突入した時点で使用済み扱い（成功・失敗問わず）
+  mountScreen(continueScreen.mount, {
+    onSuccess: continueSuccess,
+    onFail: () => goToResult(false),
+  });
+}
+
+function continueSuccess() {
+  const config = TEMP_CONFIG[state.tempMode];
+  segmentDurationMs = config.revivalMs;
+  state.timerController.revive(config.revivalMs);
+  state.phase = "QUIZ";
+  state.locked = false;
+  mountQuizScreen();
+}
+
+function goToResult(didWin) {
+  state.phase = "RESULT";
+  if (state.timerController) state.timerController.stop();
+  setRingVisible(false);
+  mountScreen(resultScreen.mount, {
+    didWin,
+    reviewLog: state.reviewLog,
+    onGoToReview: goToReview,
+  });
+}
+
+function goToReview() {
+  state.phase = "REVIEW";
+  mountScreen(reviewScreen.mount, {
+    reviewLog: state.reviewLog,
+    onReturnToTitle: goToTitle,
+  });
+}
+
+/**
+ * ゲーム初期化。DOM要素の取得とTITLE画面の初回マウントを行う。
+ * @param {HTMLElement} rootElement - #screen-root
+ */
+export function initGame(rootElement) {
+  screenRoot = rootElement;
+  ringEl = document.getElementById("stamina-ring");
+  timeEl = document.getElementById("stamina-time");
+  bodyEl = document.body;
+
+  updateRingGeometry();
+  window.addEventListener("resize", updateRingGeometry);
+  window.addEventListener("orientationchange", updateRingGeometry);
+
+  goToTitle();
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      initGame(document.getElementById("screen-root"));
+    });
+  } else {
+    initGame(document.getElementById("screen-root"));
+  }
+}
