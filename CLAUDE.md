@@ -53,13 +53,17 @@ bd close <id>         # Complete work
 
 ## Build & Test
 
-_Add your build and test commands here_
+ビルド不要の静的サイト（GitHub Pages 配信）。テストは Node.js 組み込みランナー。
 
 ```bash
-# Example:
-# npm install
-# npm test
+npm install        # jsdom (E2E用 devDependency) を導入
+npm test           # 全テスト: データ検証・quizPicker/timer/records単体・jsdom E2E
+npm run test:unit  # DOM非依存の単体・データ検証のみ（jsdom不要）
 ```
+
+テストは `tests/` に恒久化されている。詳細は README「テスト」節を参照。新店舗の
+出題プールを追加したら `tests/helpers/pools.js` に登録すると回帰検証の対象になる。
+jsdom が解決できない環境では E2E は自動スキップ（`JSDOM_PATH` で明示指定可）。
 
 ## Architecture Overview
 

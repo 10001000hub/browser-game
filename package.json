@@ -5,7 +5,7 @@
   "type": "module",
   "description": "『俺がまさお』サウナ耐久クイズ学習ゲーム。ビルド不要の静的サイト（GitHub Pages配信）。",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test \"tests/**/*.test.js\"",
     "test:unit": "node --test tests/data.test.js tests/quizPicker.test.js tests/timer.test.js"
   },
   "devDependencies": {

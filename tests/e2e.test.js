@@ -98,7 +98,10 @@ test("E2E", suiteOptions, async (t) => {
     const { document, window } = env;
     click(window, document.querySelector(".tap-start"));
     click(window, document.querySelector('.shop-card[data-store-id="github"]'));
+    // 扉は開扉アニメ用に 220ms の setTimeout 越しに onSelectTemp を呼ぶため、
+    // 保留タイマーを1段だけ進める（runAllTimersだとイントロ自動進行まで巻き込む）
     click(window, document.querySelector(`.door[data-temp="${tempMode}"]`));
+    env.fake.runPendingTimers();
     click(window, document.querySelector(".dialogue-skip"));
     assert.equal(currentScreen(document), "quiz-battle", "クイズ画面に到達していない");
   }

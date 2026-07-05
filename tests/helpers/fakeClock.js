@@ -12,6 +12,7 @@
  *   clock: { now: number },
  *   flushRaf: () => void,
  *   runAllTimers: () => void,
+ *   runPendingTimers: () => void,
  *   uninstall: () => void,
  * }}
  */
@@ -73,7 +74,7 @@ export function installFakeClock(targets = [globalThis]) {
     for (const [, cb] of snapshot) cb();
   }
 
-  /** 遅延に関わらずキュー済みタイマーを空になるまで実行する。 */
+  /** 遅延に関わらずキュー済みタイマーを空になるまで実行する（実行中に増えた分も含む）。 */
   function runAllTimers() {
     let guard = 0;
     while (timeouts.size && guard++ < 10_000) {
@@ -81,6 +82,16 @@ export function installFakeClock(targets = [globalThis]) {
       timeouts.delete(id);
       fn();
     }
+  }
+
+  /**
+   * 呼び出し時点でキュー済みのタイマーだけを実行する（実行中に新規スケジュールされた
+   * ものは次回へ持ち越す）。遷移1段だけ進めたいときに使う。
+   */
+  function runPendingTimers() {
+    const snapshot = [...timeouts.entries()];
+    for (const [id] of snapshot) timeouts.delete(id);
+    for (const [, fn] of snapshot) fn();
   }
 
   function uninstall() {
@@ -95,5 +106,5 @@ export function installFakeClock(targets = [globalThis]) {
     }
   }
 
-  return { clock, flushRaf, runAllTimers, uninstall };
+  return { clock, flushRaf, runAllTimers, runPendingTimers, uninstall };
 }
