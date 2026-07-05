@@ -1,5 +1,5 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
-import { playSfx } from "../engine/sfx.js";
+import { playSfx, isMuted } from "../engine/sfx.js";
 
 /**
  * 導入会話シーン（赤坂 GitHub 店）
@@ -57,14 +57,40 @@ export function mount(root, context) {
 
   let index = 0;
   let pendingTimers = [];
+  let voiceAudio = null;
 
   function clearTimers() {
     pendingTimers.forEach((id) => window.clearTimeout(id));
     pendingTimers = [];
   }
 
+  /** 「俺がまさおだ」演出のボイス(osumasaodesu.mov)を再生。ミュート時・非対応環境では何もしない。 */
+  function playMasaoVoice() {
+    stopVoice();
+    if (isMuted() || typeof Audio === "undefined") return;
+    try {
+      voiceAudio = new Audio("assets/audio/osumasaodesu.mov");
+      const p = voiceAudio.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch {
+      voiceAudio = null;
+    }
+  }
+
+  function stopVoice() {
+    if (voiceAudio) {
+      try {
+        voiceAudio.pause();
+      } catch {
+        /* noop */
+      }
+      voiceAudio = null;
+    }
+  }
+
   function goNext() {
     clearTimers();
+    stopVoice();
     index += 1;
     if (index >= steps.length) return;
     render(steps[index]);
@@ -74,15 +100,18 @@ export function mount(root, context) {
     section.className = "screen screen--dialogue";
     section.dataset.screen = "intro-dialogue";
     const isNarration = step.type === "narration";
-    const speakerLabel = step.type === "masao" ? "まさお" : step.type === "fake" ? "偽まさお" : "";
-    const speakerClass = step.type === "masao" ? "dialogue-box__speaker--masao" : "";
+    const isMasao = step.type === "masao";
+    const isFake = step.type === "fake";
+    const speakerLabel = isMasao ? "まさお" : isFake ? "偽まさお" : "";
+    // まさおは右端、偽まさおは左端にラベルを配置
+    const speakerClass = isMasao ? "dialogue-box__speaker--masao" : "dialogue-box__speaker--fake";
     const textContent = isNarration ? step.text : `「${step.text}」`;
 
     section.innerHTML = `
-      <div class="steam-bg" aria-hidden="true">
-        <span class="steam-blob steam-blob--1"></span>
-        <span class="steam-blob steam-blob--2"></span>
-        <span class="steam-blob steam-blob--3"></span>
+      <div class="sauna-bg" aria-hidden="true"></div>
+      <div class="dialogue-cast" aria-hidden="true">
+        <img class="portrait portrait--fake ${isFake ? "is-active" : "is-dim"}" src="assets/images/nisemasao.jpg" alt="">
+        <img class="portrait portrait--masao ${isMasao ? "is-active" : "is-dim"}" src="assets/images/masao.jpg" alt="">
       </div>
       <button type="button" class="btn btn--ghost dialogue-skip">スキップ</button>
       ${step.showRingHint ? '<p class="ring-preview-hint">――耐久リングが画面の外周に浮かび、ゆっくりと減り始めた。</p>' : ""}
@@ -143,7 +172,7 @@ export function mount(root, context) {
     pendingTimers.push(window.setTimeout(() => flash.classList.add("is-flashing"), 500));
     pendingTimers.push(window.setTimeout(() => {
       text.classList.add("is-revealed");
-      playSfx("reveal");
+      playMasaoVoice();
     }, 550));
     pendingTimers.push(window.setTimeout(() => text.classList.add("is-glowing"), 1050));
     pendingTimers.push(window.setTimeout(advance, 2200));
@@ -190,6 +219,7 @@ export function mount(root, context) {
   return {
     unmount() {
       clearTimers();
+      stopVoice();
       section.remove();
     },
   };

@@ -36,7 +36,6 @@ export function mount(root, context) {
       <span class="bubble__speaker">偽まさお</span>
       <p class="bubble__text">${escapeHtml(context.question.fakeMasaoLine)}</p>
     </div>
-    <p class="quiz-question">${escapeHtml(context.question.questionText)}</p>
     <div class="choice-list"></div>
     <div class="feedback-toast" aria-live="polite"></div>
   `;

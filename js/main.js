@@ -280,6 +280,8 @@ function goToResult(didWin) {
   state.phase = "RESULT";
   if (state.timerController) state.timerController.stop();
   setRingVisible(false);
+  // 整い場（リザルト・振り返り）では耐久リングと熱演出（外周のシェイク/明滅=タイムの枠）を消す
+  if (bodyEl) bodyEl.dataset.heat = "normal";
   playSfx(didWin ? "win" : "lose");
 
   // クリア時のみ、残り時間を店舗×温度のベスト記録として保存する。
