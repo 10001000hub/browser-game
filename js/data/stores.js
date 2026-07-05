@@ -21,6 +21,14 @@ export const stores = [
     questionPoolId: "github",
   },
   {
+    id: "orca",
+    displayName: "銀座 Orca 店",
+    themeName: "Orca",
+    description: "オルカ編。複数AIを束ねるIDE「Orca」の要点を蒸し込む。",
+    status: "available",
+    questionPoolId: "orca",
+  },
+  {
     id: "prompt-engineering",
     displayName: "六本木 プロンプトエンジニアリング店",
     themeName: "プロンプトエンジニアリング",
@@ -59,13 +67,5 @@ export const stores = [
     description: "準備中のサウナ。",
     status: "coming-soon",
     questionPoolId: "ai-agent",
-  },
-  {
-    id: "orca",
-    displayName: "銀座 Orca 店",
-    themeName: "Orca",
-    description: "オルカ編。複数AIを束ねるIDE「Orca」の要点を蒸し込む。",
-    status: "available",
-    questionPoolId: "orca",
   },
 ];
