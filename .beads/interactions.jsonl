@@ -6,3 +6,4 @@
 {"id":"int-b4859b56","kind":"field_change","created_at":"2026-07-05T10:36:09.820174094Z","actor":"10001000hub","issue_id":"browser-game-5bq","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"実装・テスト(30 pass)確認済み"}}
 {"id":"int-4acc4f56","kind":"field_change","created_at":"2026-07-05T10:36:15.589249441Z","actor":"10001000hub","issue_id":"browser-game-5bq","extra":{"field":"status","new_value":"open","old_value":"closed"}}
 {"id":"int-6c2b3b81","kind":"field_change","created_at":"2026-07-05T10:36:24.580173207Z","actor":"10001000hub","issue_id":"browser-game-585","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"復活ボイス実装＋mp4化。テスト30 pass確認済み"}}
+{"id":"int-61cb184a","kind":"field_change","created_at":"2026-07-05T12:38:02.631574993Z","actor":"10001000hub","issue_id":"browser-game-b4z","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"バッグ方式ローテーション実装。3ゲーム=1周で全30問重複なし、テスト35 pass"}}
