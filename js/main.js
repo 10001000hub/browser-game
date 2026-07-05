@@ -1,6 +1,5 @@
 import { stores } from "./data/stores.js";
-import { githubQuestions } from "./data/questions-github.js";
-import { orcaQuestions } from "./data/questions-orca.js";
+import { questionPools } from "./data/questionPools.js";
 import { TEMP_CONFIG } from "./data/tempConfig.js";
 import { shuffleArray, isCorrectChoice } from "./engine/quizPicker.js";
 import { nextQuizSet } from "./engine/rotation.js";
@@ -15,12 +14,6 @@ import * as quizScreen from "./screens/quizScreen.js";
 import * as continueScreen from "./screens/continueScreen.js";
 import * as resultScreen from "./screens/resultScreen.js";
 import * as reviewScreen from "./screens/reviewScreen.js";
-
-/** 店舗IDごとの出題プール。available な店舗（github / orca）を実装済み。 */
-const questionPools = {
-  github: githubQuestions,
-  orca: orcaQuestions,
-};
 
 let screenRoot = null;
 let ringEl = null;
