@@ -1,78 +1,72 @@
 # 俺がまさお
 
-ブラウザで動作するAI学習クイズゲーム。「サウナ」に見立てた店舗で、偽まさおの発言の真偽をクイズ形式で見抜く。
+サウナで出会った「偽まさお」とAI知識で対決する、ブラウザ完結のクイズ学習ゲーム。
+偽まさおの言い分が正しいか間違っているかを見抜きながら、熱波に耐えて10問を答えきる。
 
-## 🎮 今すぐ遊ぶ（スマホ対応）
+### ▶ 今すぐ遊ぶ（スマホ・PC対応 / インストール不要）
 
-**https://10001000hub.github.io/browser-game/**
+## https://10001000hub.github.io/browser-game/
 
-スマートフォン・PCのブラウザでそのまま遊べます（インストール不要）。
+---
 
-## ローカルでの動作確認
+## どんなゲーム？
+
+「サウナ店」に見立てた学習テーマを選ぶと、偽まさおが登場して知識をそれっぽく語りはじめる。
+プレイヤーは各発言について「正しい」か、間違っていれば「最も的確な指摘」かを4択で選ぶ。
+
+- **サウナ耐久リング** … 画面の外周が制限時間。時計回りに減り、尽きると熱波でダウン。
+- **温度で難易度が変わる** … 80℃はじっくり5分、110℃は即答勝負の1分。
+- **誤答はその場に足止め** … 間違えると時間を削られ、正解するまで先に進めない。
+- **コンティニュー** … 力尽きても一度だけ、10カウント以内の連打で復活できる。
+- **整い場（振り返り）** … 決着後、出題された10問を解説つきで復習できる。ここが学習の本番。
+
+現在遊べるのは **赤坂 GitHub 店**（GitHub入門30問）。
+残り5店舗（プロンプトエンジニアリング / Claude Code / WSL / Obsidian / AIエージェント）は Coming Soon。
+
+## ローカルで動かす
+
+ビルド不要。任意の静的サーバーで開くだけ。
 
 ```bash
-# リポジトリのルートで
 python3 -m http.server 8000
-# → http://localhost:8000 をブラウザで開く
+# → ブラウザで http://localhost:8000 を開く
 ```
 
 ## テスト
 
-Node.js 18+ の組み込みテストランナー（`node --test`）で動作する。ビルドやトランスパイルは不要。
+Node.js 標準のテストランナー（`node --test`）で動く。トランスパイル不要。
 
 ```bash
-npm test          # 全テスト（問題データ検証・quizPicker/timer単体・jsdom E2E）
-npm run test:unit # DOM非依存の単体・データ検証のみ（jsdom不要）
+npm install       # 初回のみ（E2E で使う jsdom を導入）
+npm test          # 全テスト（データ検証・ロジック単体・jsdom E2E）
+npm run test:unit # jsdom 不要の単体・データ検証だけを高速に回す
 ```
 
-内訳:
+出題データ・抽選ロジック・耐久タイマー・主要プレイフロー（勝利／コンティニュー／
+タイマー競合）を自動検証する。新しい店舗の出題プールを `tests/helpers/pools.js` に
+登録すると、データ検証の回帰対象に自動で加わる。詳しい構成は `tests/` 直下を参照。
 
-- `tests/data.test.js` — 全店舗の出題プールを検証（必須フィールド・4択・「正しい」の有無・
-  正誤とcorrectChoiceの整合・id重複・available店舗のプール存在）。新店舗のプールを
-  `tests/helpers/pools.js` に登録すると自動で検証対象になる（回帰テスト）。
-- `tests/quizPicker.test.js` / `tests/timer.test.js` — 抽選ロジックと耐久タイマーの単体テスト。
-  タイマーは `tests/helpers/fakeClock.js` で `performance.now()`・`requestAnimationFrame`・
-  `setTimeout` を差し替え、実時間に依存せず決定論的に検証する。
-- `tests/e2e.test.js` — jsdom 上で `main.js` を起動し、クイズフロー（全問正解→勝利）・
-  コンティニューフロー（時間切れ→連打成功→復帰）・タイマー一時停止（正解表示中は時間切れ
-  しない）を検証する。
-
-### jsdom について
-
-E2E テストは **jsdom**（`package.json` の devDependency）を使う。`npm install` で導入すること。
-
-```bash
-npm install   # jsdom を node_modules に導入（E2Eを有効化）
-```
-
-jsdom が解決できない環境では E2E スイートは自動でスキップされ、単体・データ検証は通常どおり
-実行される。非標準パスの jsdom を使う場合は環境変数 `JSDOM_PATH` で明示できる。
-
-## GitHub Pages での公開について
-
-公開済み: main ブランチ / `/ (root)` からの Deploy from a branch 方式。
-main へ push すると1〜2分で上記URLに自動反映される。
-
-注意: このリポジトリをプライベートに変更すると、Free プランでは GitHub Pages が
-自動停止し公開URLが404になる（公開を維持する間は Public のままにすること）。
-
-## 構成
+## ディレクトリ構成
 
 ```
-index.html          # エントリーポイント(Pages のルート)
-css/style.css        # スタイルシート（デザイントークン・画面別スタイル・演出keyframes）
-js/main.js            # 状態機械（GameState管理・画面遷移制御）
-js/engine/
-  quizPicker.js        # シャッフル・10問抽選ロジック（DOM非依存）
-  timer.js             # 耐久タイマー（performance.now()ベース、DOM非依存）
-  escapeHtml.js        # innerHTML挿入用のエスケープ
-  sfx.js               # 効果音（Web Audioオシレーター合成・外部音源不使用）
-  records.js           # 店舗×温度ごとのベスト記録（localStorage永続化）
-js/data/
-  stores.js            # 店舗（サウナ）一覧データ
-  tempConfig.js        # 温度モード別の持ち時間・ペナルティ設定
-  questions-github.js  # 赤坂 GitHub 店の出題プール（30問）
-js/screens/            # 画面ごとのUIモジュール（title/storeSelect/tempSelect/intro/quiz/continue/result/review）
-tests/                # node --test 用のテスト（単体・データ検証・jsdom E2E）
-assets/               # 画像・音声などの素材（現状未使用）
+index.html      エントリーポイント（GitHub Pages のルート）
+css/style.css   デザイントークン・画面別スタイル・演出アニメーション
+js/
+  main.js       状態機械（画面遷移とゲーム状態の管理）
+  engine/       DOM非依存のロジック（抽選・タイマー・効果音・ベスト記録・エスケープ）
+  data/         店舗一覧・温度設定・出題プール（questions-*.js）
+  screens/      画面ごとのUIモジュール（title / quiz / review など8画面）
+tests/          node --test 用のテスト一式
+assets/images/  立ち絵・背景画像
 ```
+
+新しい店舗を追加する手順は、`js/data/questions-github.js` を雛形として、
+出題プールを作り `stores.js` の該当店舗を `available` にし、`main.js` の
+`questionPools` へ登録する。
+
+## 公開について（GitHub Pages）
+
+`main` ブランチの `/ (root)` を配信。push すると1〜2分で公開URLへ自動反映される。
+
+> ⚠️ リポジトリをプライベートに変更すると、Free プランでは Pages が停止し公開URLが
+> 404 になる。公開を続ける間は Public のままにすること。
