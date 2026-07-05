@@ -8,7 +8,9 @@
  * @type {Record<string, import('../../js/data/questions-github.js').GithubQuestion[]>}
  */
 import { githubQuestions } from "../../js/data/questions-github.js";
+import { orcaQuestions } from "../../js/data/questions-orca.js";
 
 export const questionPools = {
   github: githubQuestions,
+  orca: orcaQuestions,
 };
