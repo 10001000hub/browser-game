@@ -1,6 +1,12 @@
 # 俺がまさお
 
-ブラウザで動作するAI学習クイズゲーム。「サウナ」に見立てた店舗で、偽まさおの発言の真偽をクイズ形式で見抜く。GitHub Pages で公開予定。
+ブラウザで動作するAI学習クイズゲーム。「サウナ」に見立てた店舗で、偽まさおの発言の真偽をクイズ形式で見抜く。
+
+## 🎮 今すぐ遊ぶ（スマホ対応）
+
+**https://10001000hub.github.io/browser-game/**
+
+スマートフォン・PCのブラウザでそのまま遊べます（インストール不要）。
 
 ## ローカルでの動作確認
 
@@ -10,13 +16,13 @@ python3 -m http.server 8000
 # → http://localhost:8000 をブラウザで開く
 ```
 
-## GitHub Pages での公開手順
+## GitHub Pages での公開について
 
-1. GitHub に同名のリポジトリを作成
-2. `git remote add origin git@github.com:<ユーザー名>/<リポジトリ名>.git`
-3. `git push -u origin main`
-4. GitHub のリポジトリ → Settings → Pages → Source を「Deploy from a branch」、Branch を `main` / `/ (root)` に設定
-5. `https://<ユーザー名>.github.io/<リポジトリ名>/` で公開される
+公開済み: main ブランチ / `/ (root)` からの Deploy from a branch 方式。
+main へ push すると1〜2分で上記URLに自動反映される。
+
+注意: このリポジトリをプライベートに変更すると、Free プランでは GitHub Pages が
+自動停止し公開URLが404になる（公開を維持する間は Public のままにすること）。
 
 ## 構成
 
