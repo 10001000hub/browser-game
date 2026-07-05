@@ -43,7 +43,7 @@ export function mount(root, context) {
     { type: "masao", text: "証明？" },
     { type: "fake", text: "名前は誰でも名乗れる。本物かは答えで分かる。" },
     { type: "masao", text: "……なるほど。" },
-    { type: "fake", text: `ここは${storeName}。勝負は${themeName}だ。` },
+    { type: "fake", text: `ここは${storeName}。テーマは${themeName}だ。` },
     { type: "fake", text: "答えられるのか？" },
     { type: "masao", text: "当然だ。" },
     { type: "fake", text: "10問勝負だ。" },
