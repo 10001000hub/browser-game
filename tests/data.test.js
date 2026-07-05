@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 
 import { stores } from "../js/data/stores.js";
 import { questionPools } from "./helpers/pools.js";
+import { questionPools as productionQuestionPools } from "../js/data/questionPools.js";
 
 const DIFFICULTIES = new Set(["easy", "normal", "hard"]);
 const REQUIRED_STRING_FIELDS = [
@@ -35,6 +36,23 @@ test("available な全店舗に出題プールが登録されている", () => {
     assert.ok(
       pool.length >= 10,
       `店舗「${store.displayName}」のプールは10問未満 (${pool.length}問): 抽選が成立しない`,
+    );
+  }
+});
+
+/**
+ * js/main.js が実際に import する本番レジストリ（js/data/questionPools.js）に対して、
+ * 配線漏れが無いかを直接検証する。tests/helpers/pools.js は本番の再エクスポートに
+ * すぎないため上のテストと重複して見えるが、こちらは本番ファイルそのものを対象に
+ * することで、テスト側の配線ミスとは独立に本番の欠落を検知できる。
+ */
+test("本番レジストリ（js/data/questionPools.js）に available な全店舗のプールが登録されている", () => {
+  for (const store of stores) {
+    if (store.status !== "available") continue;
+    const pool = productionQuestionPools[store.questionPoolId];
+    assert.ok(
+      Array.isArray(pool) && pool.length > 0,
+      `店舗「${store.displayName}」(pool=${store.questionPoolId}) の本番プールが未登録または空`,
     );
   }
 });
