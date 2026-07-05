@@ -2,7 +2,7 @@ import { escapeHtml } from "../engine/escapeHtml.js";
 import { playSfx, playVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
 
 /**
- * 導入会話シーン（赤坂 GitHub 店）
+ * 導入会話シーン（店舗名・テーマは選択店舗に応じて差し替え）
  * 地の文・セリフを1つずつタップ/クリック/Enterで進める。「俺がまさおだ」演出、
  * BATTLE START演出を経て context.onStartQuiz() を呼ぶ。スキップボタンで即座に
  * onStartQuiz() へ進める。
@@ -16,6 +16,7 @@ export function mount(root, context) {
   root.appendChild(section);
 
   const storeName = context.selectedStore ? context.selectedStore.displayName : "赤坂 GitHub 店";
+  const themeName = context.selectedStore ? context.selectedStore.themeName : "GitHub";
   const tempMode = context.tempMode || "80";
 
   const steps = [
@@ -39,7 +40,7 @@ export function mount(root, context) {
     { type: "masao", text: "証明？" },
     { type: "fake", text: "名前は誰でも名乗れる。本物かは答えで分かる。" },
     { type: "masao", text: "……なるほど。" },
-    { type: "fake", text: `ここは${storeName}。勝負はGitHubだ。` },
+    { type: "fake", text: `ここは${storeName}。勝負は${themeName}だ。` },
     { type: "fake", text: "答えられるのか？" },
     { type: "masao", text: "当然だ。" },
     { type: "fake", text: "10問勝負だ。" },
