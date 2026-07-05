@@ -493,7 +493,7 @@ export const orcaQuestions = [
     "successLine": "……チッ、トグル一つで済むと思うなよって話だったのにな。",
     "failureLine": "そんな甘い考えじゃ、設定画面で立ち尽くすだけだぞ。",
     "reviewExplanation": "動画で示された範囲では、Computer Use（AIによる画面操作）を有効化するトグル自体は存在するものの、それを実際に動かすには前提となるCLIツールのインストールが必要になる場合があると説明されています。またローカルPCのシステム領域へグローバルな変更を加える特性があるため、導入時には環境への影響を慎重に判断する必要があるとされています。トグルをオンにするだけで無条件にすべてが即動くという発言は誤りです。",
-    "sourceMemo": "Orca紹介動画(orca_ide_review_001) scene_08 / Computer Use有効化の前提条件"
+    "sourceMemo": "Orca紹介動画(orca_ide_review_001) scene_08 / Computer Use有効化の前提条件（公式Docsで裏取り済み: https://www.onorca.dev/docs/cli/computer-use — Orca CLI導入とOS権限付与が前提）"
   },
   {
     "id": "orca-025",
@@ -513,7 +513,7 @@ export const orcaQuestions = [
     "successLine": "……そこまで見抜くとはな、整いすぎだろ。",
     "failureLine": "湯あたりして周り見えてねえのか、詰めが甘いぜ。",
     "reviewExplanation": "動画で示された範囲では、Computer Useはローカルパソコンのシステム領域へグローバルな変更を加える特性があるとされ、だからこそ導入時には環境への影響を慎重に判断する必要があると述べられています。ブラウザの中だけで完結し一切システムに触れないという発言は、この注意喚起の内容と矛盾しており誤りです。安全性やセキュリティの具体的な保証範囲までは動画内で断定されていません。",
-    "sourceMemo": "Orca紹介動画(orca_ide_review_001) scene_08 / システム領域への影響と慎重な判断の必要性"
+    "sourceMemo": "Orca紹介動画(orca_ide_review_001) scene_08 / システム領域への影響と慎重な判断の必要性（公式Docsで裏取り済み: https://www.onorca.dev/docs/cli/computer-use — native helperがOSレベルで動作しAccessibility権限を要する）"
   },
   {
     "id": "orca-026",
@@ -532,8 +532,8 @@ export const orcaQuestions = [
     "isFakeMasaoCorrect": true,
     "successLine": "……珍しく事実だけ言っただけだ、調子に乗るなよ。",
     "failureLine": "これくらい見抜けなきゃ、湯船で座禅組んでろ。",
-    "reviewExplanation": "動画で示された範囲では、Computer Useの導入がローカル環境への影響を伴いうるため、話者自身がその場での実演をスキップしていたことが確認できます。したがってこの偽まさおの発言は正しいと言えます。実演を見送った具体的な理由の全容や、代替の説明があったかどうかまでは範囲外のため踏み込みません。",
-    "sourceMemo": "Orca紹介動画(orca_ide_review_001) scene_08 / 話者による実演スキップ"
+    "reviewExplanation": "動画で示された範囲では、Computer Useの導入がローカル環境への影響を伴いうるため、話者自身がその場での実演をスキップしていたことが映像・音声から確認できます。したがってこの偽まさおの発言は正しいと言えます。なお、本設問は製品仕様ではなく当該動画内の話者の行動に関する事実確認です。実演を見送った理由の全容や代替説明の有無までは動画の範囲外のため踏み込みません。",
+    "sourceMemo": "Orca紹介動画(orca_ide_review_001) scene_08 / 話者による実演スキップ（動画固有の事実確認。公式Docs裏取り対象外、文脈パケットの一次記録で裏付け済み）"
   },
   {
     "id": "orca-027",
