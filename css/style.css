@@ -721,15 +721,6 @@ body {
   text-shadow: var(--shadow-ember);
 }
 
-/* 耐久リングのプレビュー（導入演出の雰囲気用、非機能） */
-.ring-preview-hint {
-  margin-top: var(--space-4);
-  font-size: var(--fs-small);
-  color: var(--color-text-faint);
-  text-align: center;
-  z-index: var(--z-content);
-}
-
 /* 3.6 クイズバトル */
 .screen--quiz {
   gap: var(--space-3);

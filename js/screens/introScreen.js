@@ -23,8 +23,8 @@ export function mount(root, context) {
     { type: "masao", text: "今日は……ここだな。" },
     { type: "narration", text: `入口には2つの扉があった。まさおは${tempMode}℃の扉を選んで潜り抜けた。` },
     { type: "narration", text: "扉が開く。白い湯気、木の壁、薄暗い照明。熱で空気が揺れる。奥から声がした。" },
-    { type: "fake", text: "AIのこと、全部教えてやる。" },
-    { type: "fake", text: "難しく考えるな。聞けばすぐ分かる。" },
+    { type: "fake", text: "コンサル料100万でいいよ。" },
+    { type: "fake", text: "AIのことなんでも聞いてよ。" },
     { type: "fake", text: "僕の名前は、まさおだよ。" },
     { type: "masao", text: "……おい。" },
     { type: "fake", text: "ん？" },
@@ -39,7 +39,6 @@ export function mount(root, context) {
     { type: "masao", text: "証明？" },
     { type: "fake", text: "名前は誰でも名乗れる。本物かは答えで分かる。" },
     { type: "masao", text: "……なるほど。" },
-    { type: "fake", text: `ここは${storeName}。勝負はGitHubだ。` },
     { type: "fake", text: "答えられるのか？" },
     { type: "masao", text: "当然だ。" },
     { type: "fake", text: "10問勝負だ。" },
@@ -47,8 +46,7 @@ export function mount(root, context) {
     { type: "masao", text: "正しければ認める。違えば崩す。" },
     { type: "fake", text: "いいね。" },
     { type: "fake", text: "ただしここはサウナだ。" },
-    { type: "narration", text: "画面外周に耐久リングが表示され、ゆっくり減り始める。", showRingHint: true },
-    { type: "fake", text: "耐えながら10問答えきれたら認めてやる。" },
+    { type: "fake", text: "10問答えきれたら認めてやる。" },
     { type: "masao", text: "認めはいらない。" },
     { type: "masao", text: "ここで証明する。" },
     { type: "fake", text: "始めよう。" },
@@ -89,7 +87,6 @@ export function mount(root, context) {
         <img class="portrait portrait--masao ${isMasao ? "is-active" : "is-dim"}" src="assets/images/masao.jpg" alt="">
       </div>
       <button type="button" class="btn btn--ghost dialogue-skip">スキップ</button>
-      ${step.showRingHint ? '<p class="ring-preview-hint">――耐久リングが画面の外周に浮かび、ゆっくりと減り始めた。</p>' : ""}
       <div class="dialogue-box" role="button" tabindex="0" aria-label="タップして次へ">
         ${isNarration ? "" : `<span class="dialogue-box__speaker ${speakerClass}">${speakerLabel}</span>`}
         <p class="dialogue-box__text ${isNarration ? "dialogue-box__text--narration" : ""}">${escapeHtml(textContent)}</p>
