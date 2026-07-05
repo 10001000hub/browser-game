@@ -1,3 +1,5 @@
+import { escapeHtml } from "../engine/escapeHtml.js";
+
 /**
  * 導入会話シーン（赤坂 GitHub 店）
  * 地の文・セリフを1つずつタップ/クリック/Enterで進める。「俺がまさおだ」演出、
@@ -85,7 +87,7 @@ export function mount(root, context) {
       ${step.showRingHint ? '<p class="ring-preview-hint">――耐久リングが画面の外周に浮かび、ゆっくりと減り始めた。</p>' : ""}
       <div class="dialogue-box" role="button" tabindex="0" aria-label="タップして次へ">
         ${isNarration ? "" : `<span class="dialogue-box__speaker ${speakerClass}">${speakerLabel}</span>`}
-        <p class="dialogue-box__text ${isNarration ? "dialogue-box__text--narration" : ""}">${textContent}</p>
+        <p class="dialogue-box__text ${isNarration ? "dialogue-box__text--narration" : ""}">${escapeHtml(textContent)}</p>
         <span class="dialogue-box__next" aria-hidden="true">▼</span>
       </div>
     `;
@@ -154,7 +156,7 @@ export function mount(root, context) {
     section.className = "screen battle-start";
     section.dataset.screen = "battle-start";
     section.innerHTML = `
-      <p class="battle-start__store">${storeName}</p>
+      <p class="battle-start__store">${escapeHtml(storeName)}</p>
       <p class="battle-start__label">BATTLE START</p>
     `;
 

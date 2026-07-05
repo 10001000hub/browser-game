@@ -1,3 +1,5 @@
+import { escapeHtml } from "../engine/escapeHtml.js";
+
 /**
  * 整い場（振り返り）画面
  * @param {HTMLElement} root
@@ -23,16 +25,16 @@ export function mount(root, context) {
                 <span class="review-card__no">Q${entry.index}</span>
                 ${badge}
               </header>
-              <p class="review-card__quote">「偽まさお」: ${entry.statement}</p>
+              <p class="review-card__quote">「偽まさお」: ${escapeHtml(entry.statement)}</p>
               <dl class="review-card__answers">
-                <dt>あなたの回答</dt><dd>${entry.firstAnswer}</dd>
-                <dt>正解</dt><dd>${entry.correctAnswer}</dd>
+                <dt>あなたの回答</dt><dd>${escapeHtml(entry.firstAnswer)}</dd>
+                <dt>正解</dt><dd>${escapeHtml(entry.correctAnswer)}</dd>
               </dl>
-              <p class="review-card__explain">解説: ${entry.explanation}</p>
+              <p class="review-card__explain">解説: ${escapeHtml(entry.explanation)}</p>
               <div class="review-card__tags">
-                <span class="tag">${entry.topic}</span>
+                <span class="tag">${escapeHtml(entry.topic)}</span>
               </div>
-              <p class="review-card__source">出典: ${entry.sourceMemo}</p>
+              <p class="review-card__source">出典: ${escapeHtml(entry.sourceMemo)}</p>
             </article>
           `;
         })

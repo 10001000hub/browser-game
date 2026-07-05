@@ -1,3 +1,5 @@
+import { escapeHtml } from "../engine/escapeHtml.js";
+
 /**
  * 店舗選択画面
  * @param {HTMLElement} root
@@ -13,11 +15,11 @@ export function mount(root, context) {
     .map((store) => {
       if (store.status === "available") {
         return `
-          <button type="button" class="shop-card shop-card--active" data-store-id="${store.id}">
+          <button type="button" class="shop-card shop-card--active" data-store-id="${escapeHtml(store.id)}">
             <span class="shop-card__noren-fringe" aria-hidden="true"></span>
             <span class="shop-card__icon">🐙♨️</span>
-            <span class="shop-card__name">${store.displayName}</span>
-            <span class="shop-card__desc">${store.description}</span>
+            <span class="shop-card__name">${escapeHtml(store.displayName)}</span>
+            <span class="shop-card__desc">${escapeHtml(store.description)}</span>
           </button>
         `;
       }
@@ -25,7 +27,7 @@ export function mount(root, context) {
         <div class="shop-card shop-card--soon" aria-disabled="true">
           <span class="shop-card__noren-fringe" aria-hidden="true"></span>
           <span class="shop-card__icon">♨️</span>
-          <span class="shop-card__name">${store.displayName}</span>
+          <span class="shop-card__name">${escapeHtml(store.displayName)}</span>
           <span class="badge badge--soon">Coming Soon</span>
         </div>
       `;

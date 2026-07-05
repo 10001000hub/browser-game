@@ -45,6 +45,7 @@ function freshState() {
     revivalUsed: false,
     timerController: null,
     locked: false,
+    pausedRemainingMs: 0,
   };
 }
 
@@ -214,11 +215,13 @@ function handleChoiceClick(text) {
   }
 
   if (correct) {
-    state.locked = true; // エッジケース#1・#3: 正解確定時点で二重発火をロックし、タイマーも即座に止める
+    state.locked = true; // エッジケース#1・#3: 正解確定時点で二重発火をロック
     const isLastQuestion = state.currentQuestionIndex === state.quizSet.length - 1;
-    if (isLastQuestion) {
-      state.timerController.stop();
-    }
+    // 正解確定済みの問題のフィードバック表示中に時間切れが発火すると、
+    // 正解が没収されてCONTINUE/敗北へ遷移してしまうため、タイマーを一時停止する
+    // （次の問題へ進むときに handleAdvance で残り時間から再開する）
+    state.pausedRemainingMs = state.timerController.getRemainingMs();
+    state.timerController.stop();
     playSfx("correct");
     return { correct: true, line: question.successLine, isLastQuestion };
   }
@@ -240,6 +243,7 @@ function handleAdvance() {
   state.wrongChoicesThisQuestion = new Set();
   state.currentChoiceOrder = shuffleArray(state.quizSet[state.currentQuestionIndex].choices);
   state.locked = false;
+  state.timerController.revive(state.pausedRemainingMs); // 正解時に一時停止したタイマーを残り時間から再開
   mountQuizScreen();
 }
 

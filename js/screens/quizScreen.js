@@ -1,4 +1,5 @@
 import { TEMP_CONFIG } from "../data/tempConfig.js";
+import { escapeHtml } from "../engine/escapeHtml.js";
 
 /**
  * クイズバトル画面。
@@ -33,9 +34,9 @@ export function mount(root, context) {
     </header>
     <div class="bubble bubble--masao-fake">
       <span class="bubble__speaker">偽まさお</span>
-      <p class="bubble__text">${context.question.fakeMasaoLine}</p>
+      <p class="bubble__text">${escapeHtml(context.question.fakeMasaoLine)}</p>
     </div>
-    <p class="quiz-question">${context.question.questionText}</p>
+    <p class="quiz-question">${escapeHtml(context.question.questionText)}</p>
     <div class="choice-list"></div>
     <div class="feedback-toast" aria-live="polite"></div>
   `;
@@ -67,10 +68,10 @@ export function mount(root, context) {
     // force reflow so animation restarts if re-triggered
     void toast.offsetWidth;
     if (isCorrect) {
-      toast.innerHTML = `正解！<span class="feedback-toast__line">${line || ""}</span>`;
+      toast.innerHTML = `正解！<span class="feedback-toast__line">${escapeHtml(line || "")}</span>`;
       toast.classList.add("is-correct");
     } else {
-      toast.innerHTML = `不正解 ${penaltyLabel}<span class="feedback-toast__line">${line || ""}</span>`;
+      toast.innerHTML = `不正解 ${penaltyLabel}<span class="feedback-toast__line">${escapeHtml(line || "")}</span>`;
       toast.classList.add("is-incorrect");
     }
   }

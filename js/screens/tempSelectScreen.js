@@ -27,6 +27,7 @@ export function mount(root, context) {
   root.appendChild(section);
 
   let resolved = false;
+  let doorTimer = null;
 
   const handleDoorClick = (event) => {
     const door = event.target.closest(".door");
@@ -34,7 +35,7 @@ export function mount(root, context) {
     resolved = true;
     door.classList.add("is-opening");
     const tempMode = door.dataset.temp;
-    window.setTimeout(() => {
+    doorTimer = window.setTimeout(() => {
       context.onSelectTemp(tempMode);
     }, 220);
   };
@@ -43,11 +44,19 @@ export function mount(root, context) {
   });
 
   const backBtn = section.querySelector('[data-action="back"]');
-  const handleBack = () => context.onBack();
+  // 扉選択済み(resolved)後の「戻る」は無視する: 220ms後の遷移タイマーと競合し、
+  // 店舗選択へ戻った直後にINTROへ飛ばされるのを防ぐ
+  const handleBack = () => {
+    if (resolved) return;
+    context.onBack();
+  };
   backBtn.addEventListener("click", handleBack);
 
   return {
     unmount() {
+      if (doorTimer !== null) {
+        window.clearTimeout(doorTimer);
+      }
       section.querySelectorAll(".door").forEach((door) => {
         door.removeEventListener("click", handleDoorClick);
       });
