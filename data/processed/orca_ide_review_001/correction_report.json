@@ -1,0 +1,90 @@
+{
+  "json_validity_fixes": [
+    "scene_05において、不適切なインラインコメント表現となっていた '\"quiz_allowed\":true://見た目依存を避ければ許容' を削除し、厳密なBoolean値 '\"quiz_allowed\": true' へ修正しました。それに伴う補足情報は 'risk' フィールドへと統合移送しました。",
+    "scene_08において、不適切なインラインコメント表現を完全に排除し、有効なJSONオブジェクトとして整形しました。'visible_text' 内の不確実な固有名詞表記（Orac CLI）に関する補足を、JSON構造を壊さないよう 'unresolved_references' へ移動しました。",
+    "JSONL形式（1行1オブジェクト）の機械可読性を担保するため、行内改行の排除および末尾の不要なカンマ（trailing comma）の除去を全パケットで徹底しました。"
+  ],
+  "safety_reclassifications": [
+    {
+      "packet_id": "scene_01_intro_and_ux",
+      "field_changed": "verification_needed",
+      "before": false,
+      "after": true,
+      "reason": "GitHubのリリース履歴の表示は時間経過で流動的であり、話者の口頭での更新頻度評価を恒久的な仕様として断定できないため、安全側に倒してtrueへ変更しました。"
+    },
+    {
+      "packet_id": "scene_02_initial_setup_and_project",
+      "field_changed": "verification_needed",
+      "before": false,
+      "after": true,
+      "reason": "選択可能なデフォルトエージェントの一覧や追加手順のフォームは、アプリのバージョン更新に伴い変動する可能性が高いため、trueへ変更しました。"
+    },
+    {
+      "packet_id": "scene_04_quick_commands_and_history",
+      "field_changed": "verification_needed",
+      "before": false,
+      "after": true,
+      "reason": "履歴からタブを復元する際の正確なシステム挙動や機能名が、今後のUI刷新で変わるリスクを考慮し、検証必須（true）と再判定しました。"
+    },
+    {
+      "packet_id": "scene_05_git_automation_and_editing",
+      "field_changed": "verification_needed",
+      "before": false,
+      "after": true,
+      "reason": "AIによるコミットメッセージ生成のプロンプト挿入仕様や、ステージング差分の読み取り仕様が公式未確認のため、安全側へ倒しました。"
+    },
+    {
+      "packet_id": "scene_08_computer_use_and_settings",
+      "field_changed": "quiz_allowed",
+      "before": false,
+      "after": false,
+      "reason": "false判定を維持した上で、前回のJSON破損を修正し、実演スキップされた未検証項目である旨を 'risk' へ厳密に明記しました。"
+    }
+  ],
+  "split_packets": [
+    {
+      "before": "scene_09_automation_and_repo_audit",
+      "after": [
+        "scene_09a_automation_and_repo_audit",
+        "scene_09b_channel_outro_and_membership"
+      ],
+      "reason": "タイムスタンプ11:59〜13:40の『自動化機能の製品デモ』と、13:41〜14:47の『配信者の有料コミュニティ販促・チャンネル告知』という全く関係の異なる文脈が同居していたため、教材化の混同を防ぐ目的で厳密に2パケットへ分離独立させました。"
+    }
+  ],
+  "quiz_allowed_packets": [
+    "scene_01_intro_and_ux",
+    "scene_02_initial_setup_and_project",
+    "scene_03_worktree_parallel",
+    "scene_04_quick_commands_and_history",
+    "scene_05_git_automation_and_editing",
+    "scene_06_workspace_board_kanban",
+    "scene_07_orca_mobile_remote",
+    "scene_09a_automation_and_repo_audit"
+  ],
+  "quiz_blocked_packets": [
+    "scene_08_computer_use_and_settings",
+    "scene_09b_channel_outro_and_membership"
+  ],
+  "remaining_verification_needed": [
+    {
+      "packet_id": "scene_03_worktree_parallel",
+      "reason": "Gitワークツリーがローカルのどのディレクトリパスにどのような命名規則で生成されるかといった詳細仕様の公式確認"
+    },
+    {
+      "packet_id": "scene_06_workspace_board_kanban",
+      "reason": "GitHub/JiraのIssueステータスが双方向同期するのか、あるいはOrca側からの片方向反映なのかの通信仕様の確認"
+    },
+    {
+      "packet_id": "scene_07_orca_mobile_remote",
+      "reason": "スマホからホストPCを制御する際の通信プロトコル（同一ローカルネットワーク要件か、外部トンネリング経由か）のセキュリティ確認"
+    },
+    {
+      "packet_id": "scene_08_computer_use_and_settings",
+      "reason": "Computer Use実行に必要となる前提ツール（CLI）の正確なソフトウェア名称およびインストール時のシステム権限影響の確認"
+    },
+    {
+      "packet_id": "scene_09a_automation_and_repo_audit",
+      "reason": "スケジュールによる自動レビューや監査がバックグラウンドサービスとして常時動作するのか、IDE起動時のみ動作するのかという実行要件の公式確認"
+    }
+  ]
+}
