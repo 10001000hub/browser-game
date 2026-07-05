@@ -310,6 +310,7 @@ function goToReview() {
   state.phase = "REVIEW";
   mountScreen(reviewScreen.mount, {
     reviewLog: state.reviewLog,
+    selectedStore: state.selectedStore,
     onReturnToTitle: goToTitle,
   });
 }

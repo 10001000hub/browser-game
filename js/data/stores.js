@@ -8,6 +8,7 @@
  * @property {string} description
  * @property {"available"|"coming-soon"} status
  * @property {string} questionPoolId
+ * @property {string} [sourceVideoUrl] - 整い場に表示する解説元動画のURL（任意）
  *
  * @type {Store[]}
  */
@@ -27,6 +28,7 @@ export const stores = [
     description: "オルカ編。複数AIを束ねるIDE「Orca」の要点を蒸し込む。",
     status: "available",
     questionPoolId: "orca",
+    sourceVideoUrl: "https://youtu.be/iq5po7h8nYc?si=Ix4VSFTw-_xTYmJq",
   },
   {
     id: "prompt-engineering",
