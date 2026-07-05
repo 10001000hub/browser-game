@@ -60,4 +60,12 @@ export const stores = [
     status: "coming-soon",
     questionPoolId: "ai-agent",
   },
+  {
+    id: "orca",
+    displayName: "銀座 Orca 店",
+    themeName: "Orca",
+    description: "オルカ編。複数AIを束ねるIDE「Orca」の要点を蒸し込む。",
+    status: "available",
+    questionPoolId: "orca",
+  },
 ];
