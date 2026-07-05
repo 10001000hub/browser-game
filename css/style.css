@@ -981,6 +981,17 @@ body {
   font-size: 0.75rem;
   color: var(--color-text-faint);
 }
+.review-source-video {
+  margin-top: var(--space-4);
+  font-size: var(--fs-small);
+  color: var(--color-text-faint);
+  text-align: center;
+  word-break: break-all;
+}
+.review-source-video__link {
+  color: var(--color-amber);
+  text-decoration: underline;
+}
 .review-card--unreached {
   opacity: 0.5;
 }

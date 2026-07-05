@@ -3,7 +3,7 @@ import { escapeHtml } from "../engine/escapeHtml.js";
 /**
  * 整い場（振り返り）画面
  * @param {HTMLElement} root
- * @param {{ reviewLog: (object|null|undefined)[], onReturnToTitle: () => void }} context
+ * @param {{ reviewLog: (object|null|undefined)[], selectedStore?: import('../data/stores.js').Store, onReturnToTitle: () => void }} context
  * @returns {{ unmount: () => void }}
  */
 export function mount(root, context) {
@@ -41,9 +41,15 @@ export function mount(root, context) {
         .join("")
     : '<p class="review-empty">記録なし。</p>';
 
+  const videoUrl = context.selectedStore && context.selectedStore.sourceVideoUrl;
+  const sourceVideoHtml = videoUrl
+    ? `<p class="review-source-video">この整い場の解説の元になった動画: <a class="review-source-video__link" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(videoUrl)}</a></p>`
+    : "";
+
   section.innerHTML = `
     <h2 class="screen-title">整い場</h2>
     <div class="review-list">${cardsHtml}</div>
+    ${sourceVideoHtml}
     <button type="button" class="btn btn--primary" data-action="to-title">タイトルへ戻る</button>
   `;
   root.appendChild(section);
