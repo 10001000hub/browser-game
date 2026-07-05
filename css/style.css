@@ -1283,10 +1283,12 @@ body {
 [data-heat="warm"] .steam-bg {
   animation: heat-glow-pulse 2.5s ease-in-out infinite;
 }
-[data-heat="danger"] #app {
+[data-heat="danger"] .stamina-ring {
   animation: edge-shake 0.25s linear infinite;
 }
-[data-heat="critical"] .stamina-ring,
+[data-heat="critical"] .stamina-ring {
+  animation: edge-shake 0.18s linear infinite, flicker-critical 0.5s ease-in-out infinite;
+}
 [data-heat="critical"] .stamina-time {
   animation: flicker-critical 0.5s ease-in-out infinite;
 }
