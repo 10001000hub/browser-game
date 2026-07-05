@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# dependencies / build (将来ビルドツールを導入した場合用)
+node_modules/
+dist/
+
+# secrets
+.env
+.env.*
