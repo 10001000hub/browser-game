@@ -1,5 +1,5 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
-import { playSfx, isMuted } from "../engine/sfx.js";
+import { playSfx, playVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
 
 /**
  * 導入会話シーン（赤坂 GitHub 店）
@@ -57,35 +57,10 @@ export function mount(root, context) {
 
   let index = 0;
   let pendingTimers = [];
-  let voiceAudio = null;
 
   function clearTimers() {
     pendingTimers.forEach((id) => window.clearTimeout(id));
     pendingTimers = [];
-  }
-
-  /** 「俺がまさおだ」演出のボイス(osumasaodesu.mov)を再生。ミュート時・非対応環境では何もしない。 */
-  function playMasaoVoice() {
-    stopVoice();
-    if (isMuted() || typeof Audio === "undefined") return;
-    try {
-      voiceAudio = new Audio("assets/audio/osumasaodesu.mov");
-      const p = voiceAudio.play();
-      if (p && typeof p.catch === "function") p.catch(() => {});
-    } catch {
-      voiceAudio = null;
-    }
-  }
-
-  function stopVoice() {
-    if (voiceAudio) {
-      try {
-        voiceAudio.pause();
-      } catch {
-        /* noop */
-      }
-      voiceAudio = null;
-    }
   }
 
   function goNext() {
@@ -172,7 +147,7 @@ export function mount(root, context) {
     pendingTimers.push(window.setTimeout(() => flash.classList.add("is-flashing"), 500));
     pendingTimers.push(window.setTimeout(() => {
       text.classList.add("is-revealed");
-      playMasaoVoice();
+      playVoice(VOICE_MASAO);
     }, 550));
     pendingTimers.push(window.setTimeout(() => text.classList.add("is-glowing"), 1050));
     pendingTimers.push(window.setTimeout(advance, 2200));

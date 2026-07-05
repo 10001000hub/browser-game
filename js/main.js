@@ -3,7 +3,7 @@ import { githubQuestions } from "./data/questions-github.js";
 import { TEMP_CONFIG } from "./data/tempConfig.js";
 import { shuffleArray, selectTenQuestions, isCorrectChoice } from "./engine/quizPicker.js";
 import { createTimer } from "./engine/timer.js";
-import { playSfx, unlockAudio, isMuted, toggleMute } from "./engine/sfx.js";
+import { playSfx, playVoice, unlockAudio, isMuted, toggleMute, VOICE_MASAO } from "./engine/sfx.js";
 import { getBestRemainingMs, recordClear } from "./engine/records.js";
 import * as titleScreen from "./screens/titleScreen.js";
 import * as storeSelectScreen from "./screens/storeSelectScreen.js";
@@ -273,6 +273,7 @@ function continueSuccess() {
   state.timerController.revive(config.revivalMs);
   state.phase = "QUIZ";
   state.locked = false;
+  playVoice(VOICE_MASAO); // 復活時も「俺がまさおだ」ボイスを鳴らす
   mountQuizScreen();
 }
 
