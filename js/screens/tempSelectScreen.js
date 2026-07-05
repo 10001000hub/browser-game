@@ -1,7 +1,22 @@
+import { formatRemaining } from "../engine/records.js";
+
+/**
+ * ベスト記録行のHTMLを返す。未記録なら「記録なし」。
+ * bestRecords は main.js から渡される {"80": number|null, "110": number|null}。
+ * @param {{[temp: string]: number|null}|undefined} bestRecords
+ * @param {"80"|"110"} temp
+ * @returns {string}
+ */
+function bestLineHtml(bestRecords, temp) {
+  const ms = bestRecords ? bestRecords[temp] : null;
+  const label = typeof ms === "number" ? `👑 ベスト残り ${formatRemaining(ms)}` : "記録なし";
+  return `<span class="door__record">${label}</span>`;
+}
+
 /**
  * 温度選択画面
  * @param {HTMLElement} root
- * @param {{ onSelectTemp: (tempMode: "80"|"110") => void, onBack: () => void }} context
+ * @param {{ bestRecords?: {[temp: string]: number|null}, onSelectTemp: (tempMode: "80"|"110") => void, onBack: () => void }} context
  * @returns {{ unmount: () => void }}
  */
 export function mount(root, context) {
@@ -15,11 +30,13 @@ export function mount(root, context) {
         <span class="door__window"></span>
         <span class="door__temp">80℃</span>
         <span class="door__sub">通常・5分・初見向け</span>
+        ${bestLineHtml(context.bestRecords, "80")}
       </button>
       <button type="button" class="door door--110" data-temp="110">
         <span class="door__window"></span>
         <span class="door__temp">110℃</span>
         <span class="door__sub">灼熱・1分・上級者向け</span>
+        ${bestLineHtml(context.bestRecords, "110")}
       </button>
     </div>
     <button type="button" class="btn btn--ghost" data-action="back">戻る</button>

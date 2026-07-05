@@ -4,6 +4,7 @@ import { TEMP_CONFIG } from "./data/tempConfig.js";
 import { shuffleArray, selectTenQuestions, isCorrectChoice } from "./engine/quizPicker.js";
 import { createTimer } from "./engine/timer.js";
 import { playSfx, unlockAudio, isMuted, toggleMute } from "./engine/sfx.js";
+import { getBestRemainingMs, recordClear } from "./engine/records.js";
 import * as titleScreen from "./screens/titleScreen.js";
 import * as storeSelectScreen from "./screens/storeSelectScreen.js";
 import * as tempSelectScreen from "./screens/tempSelectScreen.js";
@@ -124,6 +125,10 @@ function goToStoreSelect() {
 function goToTempSelect() {
   state.phase = "TEMP_SELECT";
   mountScreen(tempSelectScreen.mount, {
+    bestRecords: {
+      "80": getBestRemainingMs(state.selectedStore.id, "80"),
+      "110": getBestRemainingMs(state.selectedStore.id, "110"),
+    },
     onSelectTemp(tempMode) {
       state.tempMode = tempMode;
       goToIntro();
@@ -276,9 +281,20 @@ function goToResult(didWin) {
   if (state.timerController) state.timerController.stop();
   setRingVisible(false);
   playSfx(didWin ? "win" : "lose");
+
+  // クリア時のみ、残り時間を店舗×温度のベスト記録として保存する。
+  // state.pausedRemainingMs は最終問題を正解した瞬間の残り時間（handleChoiceClickで確定）。
+  let recordResult = null;
+  if (didWin && state.selectedStore && state.tempMode) {
+    recordResult = recordClear(state.selectedStore.id, state.tempMode, state.pausedRemainingMs);
+  }
+
   mountScreen(resultScreen.mount, {
     didWin,
     reviewLog: state.reviewLog,
+    tempMode: state.tempMode,
+    clearRemainingMs: didWin ? state.pausedRemainingMs : null,
+    recordResult,
     onGoToReview: goToReview,
   });
 }
