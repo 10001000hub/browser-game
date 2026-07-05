@@ -493,9 +493,38 @@ body {
   perspective: 800px;
   width: 100%;
 }
+/* 80℃: 木の扉（縦板の木目＋丸窓） */
+.door--80 {
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 44px),
+    linear-gradient(180deg, var(--color-wood), var(--color-wood-dark));
+  border: 3px solid var(--color-wood-light);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.22), inset 0 10px 26px rgba(0, 0, 0, 0.35);
+}
+.door--80 .door__window {
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-steam-strong), transparent 70%);
+  border: 3px solid var(--color-wood-light);
+}
+/* 110℃: 重そうな鉄の扉（金属グラデ＋四隅のリベット＋灼熱の格子窓） */
 .door--110 {
-  background: linear-gradient(180deg, #4a2418, #2a1108);
-  border-color: var(--color-ember);
+  background:
+    radial-gradient(circle at 14px 14px, rgba(255, 255, 255, 0.3) 0 3px, transparent 4px),
+    radial-gradient(circle at calc(100% - 14px) 14px, rgba(255, 255, 255, 0.3) 0 3px, transparent 4px),
+    radial-gradient(circle at 14px calc(100% - 14px), rgba(255, 255, 255, 0.3) 0 3px, transparent 4px),
+    radial-gradient(circle at calc(100% - 14px) calc(100% - 14px), rgba(255, 255, 255, 0.3) 0 3px, transparent 4px),
+    linear-gradient(180deg, #5a5f66, #2b2e33 55%, #16181b);
+  border: 4px solid #14161a;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.06), inset 0 10px 30px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.door--110 .door__temp {
+  color: var(--color-ember);
+}
+.door--110 .door__window {
+  border-radius: 6px;
+  background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.65) 0 3px, rgba(255, 120, 40, 0.28) 3px 8px);
+  border: 3px solid #0c0d0f;
+  box-shadow: 0 0 18px rgba(255, 90, 20, 0.5);
 }
 .door__window {
   width: 40%;
@@ -559,8 +588,56 @@ body {
   font-weight: 700;
   font-size: var(--fs-small);
 }
+.dialogue-box__speaker--fake {
+  left: var(--space-3);
+  right: auto;
+}
 .dialogue-box__speaker--masao {
+  left: auto;
+  right: var(--space-3);
   background: var(--color-cooldown-blue-deep);
+}
+
+/* 会話シーン背景（sauna.jpg）＋左右の立ち絵 */
+.sauna-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: linear-gradient(rgba(10, 6, 4, 0.55), rgba(10, 6, 4, 0.7)),
+    url("../assets/images/sauna.jpg");
+  background-size: cover;
+  background-position: center;
+}
+.dialogue-cast {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-bg, 1);
+  pointer-events: none;
+}
+.portrait {
+  position: absolute;
+  bottom: 0;
+  height: min(52vh, 380px);
+  width: auto;
+  max-width: 46%;
+  object-fit: contain;
+  transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+.portrait--fake {
+  left: 0;
+}
+.portrait--masao {
+  right: 0;
+}
+.portrait.is-active {
+  filter: brightness(1) saturate(1);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.portrait.is-dim {
+  filter: brightness(0.38) saturate(0.75);
+  opacity: 0.85;
+  transform: translateY(6px) scale(0.97);
 }
 .dialogue-box__text {
   font-size: var(--fs-body);
@@ -1226,7 +1303,7 @@ body {
 .mute-toggle {
   position: fixed;
   top: max(env(safe-area-inset-top), var(--space-2));
-  right: max(env(safe-area-inset-right), var(--space-3));
+  left: max(env(safe-area-inset-left), var(--space-3));
   z-index: var(--z-toast);
   display: grid;
   place-items: center;
