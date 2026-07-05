@@ -1,7 +1,8 @@
 import { stores } from "./data/stores.js";
 import { githubQuestions } from "./data/questions-github.js";
 import { TEMP_CONFIG } from "./data/tempConfig.js";
-import { shuffleArray, selectTenQuestions, isCorrectChoice } from "./engine/quizPicker.js";
+import { shuffleArray, isCorrectChoice } from "./engine/quizPicker.js";
+import { nextQuizSet } from "./engine/rotation.js";
 import { createTimer } from "./engine/timer.js";
 import { playSfx, playVoice, unlockAudio, isMuted, toggleMute, VOICE_MASAO } from "./engine/sfx.js";
 import { getBestRemainingMs, recordClear } from "./engine/records.js";
@@ -151,7 +152,8 @@ function goToIntro() {
 
 function startQuiz() {
   const pool = questionPools[state.selectedStore.questionPoolId] || [];
-  state.quizSet = selectTenQuestions(pool);
+  // バッグ方式のローテーション: 1周する間は同じ問題を出さず、リロードしても継続する
+  state.quizSet = nextQuizSet(pool, state.selectedStore.questionPoolId);
   state.currentQuestionIndex = 0;
   state.reviewLog = new Array(state.quizSet.length).fill(null);
   state.revivalUsed = false;
