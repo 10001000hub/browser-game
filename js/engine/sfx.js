@@ -167,6 +167,44 @@ export function playSfx(name) {
   }
 }
 
+/**
+ * ボイスクリップ（外部音源ファイル）のパス。全ブラウザ再生互換のため MP4/AAC を使用。
+ * 「俺がまさおだ」演出とコンティニュー復活時に共用する。
+ */
+export const VOICE_MASAO = "assets/audio/osumasaodesu.mp4";
+
+/** @type {HTMLAudioElement|null} 再生中のボイス（多重再生を防ぐため単一参照で管理） */
+let voiceAudio = null;
+
+/**
+ * ボイスクリップを再生する。ミュート時・Audio 非対応環境（jsdom 等）では何もしない。
+ * 再生中の別ボイスがあれば停止してから再生する。
+ * @param {string} src
+ */
+export function playVoice(src) {
+  stopVoice();
+  if (muted || typeof Audio === "undefined") return;
+  try {
+    voiceAudio = new Audio(src);
+    const p = voiceAudio.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  } catch (_e) {
+    voiceAudio = null;
+  }
+}
+
+/** 再生中のボイスを停止する。 */
+export function stopVoice() {
+  if (voiceAudio) {
+    try {
+      voiceAudio.pause();
+    } catch (_e) {
+      /* noop */
+    }
+    voiceAudio = null;
+  }
+}
+
 /** @returns {boolean} 現在のミュート状態 */
 export function isMuted() {
   return muted;
