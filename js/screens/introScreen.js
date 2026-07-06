@@ -1,8 +1,9 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
 import { playSfx, playVoice, preloadVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
+import { getIntroSteps } from "../data/introScripts.js";
 
 /**
- * 導入会話シーン（店舗名・テーマは選択店舗に応じて差し替え）
+ * 導入会話シーン（会話スクリプトは js/data/introScripts.js で店舗ごとに定義）
  * 地の文・セリフを1つずつタップ/クリック/Enterで進める。「俺がまさおだ」演出、
  * BATTLE START演出を経て context.onStartQuiz() を呼ぶ。スキップボタンで即座に
  * onStartQuiz() へ進める。
@@ -19,44 +20,8 @@ export function mount(root, context) {
   preloadVoice(VOICE_MASAO);
 
   const storeName = context.selectedStore ? context.selectedStore.displayName : "赤坂 GitHub 店";
-  const themeName = context.selectedStore ? context.selectedStore.themeName : "GitHub";
-  const tempMode = context.tempMode || "80";
 
-  const steps = [
-    { type: "narration", text: `まさおは${storeName}に到着した。木の扉の向こうから熱気と湯気が漏れる。` },
-    { type: "masao", text: "今日は……ここだな。" },
-    { type: "narration", text: `入口には2つの扉があった。まさおは${tempMode}℃の扉を選んで潜り抜けた。` },
-    { type: "narration", text: "扉が開く。白い湯気、木の壁、薄暗い照明。熱で空気が揺れる。奥から声がした。" },
-    { type: "fake", text: "コンサル料100万でいいよ。" },
-    { type: "fake", text: "AIのことなんでも聞いてよ。" },
-    { type: "fake", text: "僕の名前は、まさおだよ。" },
-    { type: "masao", text: "……おい。" },
-    { type: "fake", text: "ん？" },
-    { type: "masao", text: "今、なんて言った？" },
-    { type: "fake", text: "僕の名前は、まさおだよ。" },
-    { type: "masao", text: "勝手に名乗るな。" },
-    { type: "fake", text: "勝手に？" },
-    { type: "reveal" },
-    { type: "fake", text: "へえ。" },
-    { type: "narration", text: "湯気の奥で笑う。" },
-    { type: "fake", text: "じゃあ証明しろ。" },
-    { type: "masao", text: "証明？" },
-    { type: "fake", text: "名前は誰でも名乗れる。本物かは答えで分かる。" },
-    { type: "masao", text: "……なるほど。" },
-    { type: "fake", text: `ここは${storeName}。テーマは${themeName}だ。` },
-    { type: "fake", text: "答えられるのか？" },
-    { type: "masao", text: "当然だ。" },
-    { type: "fake", text: "10問勝負だ。" },
-    { type: "fake", text: "正しいと思えば正しい、違えば指摘しろ。" },
-    { type: "masao", text: "正しければ認める。違えば崩す。" },
-    { type: "fake", text: "いいね。" },
-    { type: "fake", text: "ただしここはサウナだ。" },
-    { type: "fake", text: "10問答えきれたら認めてやる。" },
-    { type: "masao", text: "認めはいらない。" },
-    { type: "masao", text: "ここで証明する。" },
-    { type: "fake", text: "始めよう。" },
-    { type: "battle-start" },
-  ];
+  const steps = getIntroSteps(context.selectedStore, context.tempMode);
 
   let index = 0;
   let pendingTimers = [];
