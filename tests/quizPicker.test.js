@@ -14,10 +14,10 @@ import {
 function makePool(correctCount, incorrectCount) {
   const pool = [];
   for (let i = 0; i < correctCount; i++) {
-    pool.push({ id: `c${i}`, isFakeMasaoCorrect: true, correctChoice: "正しい" });
+    pool.push({ id: `c${i}`, isRivalCorrect: true, correctChoice: "正しい" });
   }
   for (let i = 0; i < incorrectCount; i++) {
-    pool.push({ id: `x${i}`, isFakeMasaoCorrect: false, correctChoice: `理由${i}` });
+    pool.push({ id: `x${i}`, isRivalCorrect: false, correctChoice: `理由${i}` });
   }
   return pool;
 }
@@ -52,7 +52,7 @@ test("selectTenQuestions: 内訳が足りれば正3問・誤7問を厳守する"
   const pool = makePool(9, 21);
   for (let trial = 0; trial < 30; trial++) {
     const picked = selectTenQuestions(pool);
-    const correct = picked.filter((q) => q.isFakeMasaoCorrect).length;
+    const correct = picked.filter((q) => q.isRivalCorrect).length;
     const incorrect = picked.length - correct;
     assert.equal(correct, 3, "正しい発言が3問でない");
     assert.equal(incorrect, 7, "誤り発言が7問でない");
@@ -63,7 +63,7 @@ test("selectTenQuestions: 正解プールが不足したら誤答で補充する
   const pool = makePool(1, 20); // 正1・誤20
   const picked = selectTenQuestions(pool);
   assert.equal(picked.length, 10);
-  const correct = picked.filter((q) => q.isFakeMasaoCorrect).length;
+  const correct = picked.filter((q) => q.isRivalCorrect).length;
   assert.equal(correct, 1, "不足分は誤答で補い、ある正解は使い切る");
 });
 

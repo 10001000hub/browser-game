@@ -17,7 +17,7 @@ export function mount(root, context) {
         return `
           <button type="button" class="shop-card shop-card--active" data-store-id="${escapeHtml(store.id)}">
             <span class="shop-card__noren-fringe" aria-hidden="true"></span>
-            <span class="shop-card__icon">🐙♨️</span>
+            <span class="shop-card__icon" aria-hidden="true">${escapeHtml(store.icon || "♨️")}</span>
             <span class="shop-card__name">${escapeHtml(store.displayName)}</span>
             <span class="shop-card__desc">${escapeHtml(store.description)}</span>
           </button>

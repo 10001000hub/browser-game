@@ -69,7 +69,7 @@ test("負の残り時間は 0 にクランプして記録する", () => {
 });
 
 test("壊れた localStorage データは null として扱う", () => {
-  store.set("oregamasao.records.v1", "{broken");
+  store.set("neppa-ronpa.records.v1", "{broken");
   assert.equal(getBestRemainingMs("github", "80"), null);
 });
 

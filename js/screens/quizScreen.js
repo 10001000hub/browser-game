@@ -1,5 +1,6 @@
 import { TEMP_CONFIG } from "../data/tempConfig.js";
 import { escapeHtml } from "../engine/escapeHtml.js";
+import { CAST } from "../data/cast.js";
 
 /**
  * クイズバトル画面。
@@ -32,10 +33,15 @@ export function mount(root, context) {
     <header class="quiz-header">
       <span class="quiz-progress">${context.questionNumber} / ${context.totalQuestions}</span>
     </header>
-    <div class="bubble bubble--masao-fake">
-      <span class="bubble__speaker">偽まさお</span>
-      <p class="bubble__text">${escapeHtml(context.question.fakeMasaoLine)}</p>
+    <div class="sauna-bg sauna-bg--quiz" aria-hidden="true"></div>
+    <div class="quiz-rival">
+      <img class="quiz-rival__portrait" src="${CAST.rival.image}" alt="" aria-hidden="true">
+      <div class="bubble bubble--rival">
+        <span class="bubble__speaker">${escapeHtml(CAST.rival.name)}</span>
+        <p class="bubble__text">${escapeHtml(context.question.rivalLine)}</p>
+      </div>
     </div>
+    <p class="quiz-question">${escapeHtml(context.question.questionText)}</p>
     <div class="choice-list"></div>
     <div class="feedback-toast" aria-live="polite"></div>
   `;

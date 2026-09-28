@@ -11,7 +11,7 @@
  */
 import { shuffleArray } from "./quizPicker.js";
 
-const STORAGE_PREFIX = "oregamasao.rotation.v1.";
+const STORAGE_PREFIX = "neppa-ronpa.rotation.v1.";
 const TARGET_CORRECT = 3;
 const TARGET_INCORRECT = 7;
 
@@ -82,8 +82,8 @@ function drawFromBag(bag, allIds, need) {
  * @returns {import('../data/questions-github.js').GithubQuestion[]} 表示順にシャッフル済みの10問
  */
 export function nextQuizSet(pool, poolId) {
-  const correctPool = pool.filter((q) => q.isFakeMasaoCorrect === true);
-  const incorrectPool = pool.filter((q) => q.isFakeMasaoCorrect === false);
+  const correctPool = pool.filter((q) => q.isRivalCorrect === true);
+  const incorrectPool = pool.filter((q) => q.isRivalCorrect === false);
   const correctIds = correctPool.map((q) => q.id);
   const incorrectIds = incorrectPool.map((q) => q.id);
 

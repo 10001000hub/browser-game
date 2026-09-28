@@ -2,7 +2,7 @@
  * 「赤坂 GitHub 店」— GitHub初心者向け問題データ（30問）
  *
  * ゲームの仕組み:
- *   偽まさおがGitHub関連の発言をする。プレイヤーはその発言が
+ *   熱波師ゴウがGitHub関連の発言をする。プレイヤーはその発言が
  *   「正しいか」「間違っているならどこがどう間違っているか」を4択で答える。
  *   全問、選択肢の1つは必ず "正しい" という文字列。
  *
@@ -11,17 +11,17 @@
  * @property {string} storeId            - 常に "github"
  * @property {string} topic              - 出題テーマ（日本語）
  * @property {"easy"|"normal"|"hard"} difficulty
- * @property {string} fakeMasaoLine       - 偽まさおの発言（口語・断定調）
+ * @property {string} rivalLine       - 熱波師ゴウの発言（口語・断定調）
  * @property {string} questionText        - プレイヤーへの設問文
  * @property {string[]} choices           - 4択。必ず "正しい" を含む
  * @property {string} correctChoice       - choices内の文字列と完全一致する正解
- * @property {boolean} isFakeMasaoCorrect - 偽まさおの発言が正しいかどうか
- * @property {string} successLine         - 正解時の偽まさおの捨て台詞
- * @property {string} failureLine         - 不正解時の偽まさおの煽り台詞
+ * @property {boolean} isRivalCorrect - ゴウの発言が正しいかどうか
+ * @property {string} successLine         - 正解時のゴウの捨て台詞
+ * @property {string} failureLine         - 不正解時のゴウの煽り台詞
  * @property {string} reviewExplanation   - 解説（3〜5文）
  * @property {string} sourceMemo          - 参考にした一般的な公式情報源
  *
- * 内訳: 全30問 / isFakeMasaoCorrect true=9問, false=21問
+ * 内訳: 全30問 / isRivalCorrect true=9問, false=21問
  *       difficulty: easy=10, normal=14, hard=6
  *
  * @type {GithubQuestion[]}
@@ -32,7 +32,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitとGitHubの違い",
     difficulty: "easy",
-    fakeMasaoLine: "GitとGitHubは同じものだよ。呼び方が違うだけ。",
+    rivalLine: "GitとGitHubは同じものだよ。呼び方が違うだけ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
       "正しい",
@@ -42,7 +42,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "Gitはバージョン管理システム、GitHubはそれをホスティングするWebサービスで別物",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……チッ。まぐれだろ。",
     failureLine: "ほら見ろ。その程度か。",
     reviewExplanation:
@@ -54,7 +54,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitHubとは何か",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubはGitリポジトリをインターネット上に置いて、みんなで一緒にコードを開発できるようにするWebサービスだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -64,7 +64,7 @@ export const githubQuestions = [
       "GitHubはGitとはまったく別のバージョン管理の仕組みを使っている",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "は？　偶然だし。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
     reviewExplanation:
@@ -76,7 +76,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitHubとは何か",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubは自分のパソコンにあるファイルを保存しておくためのオンラインストレージだよ。Dropboxとだいたい同じようなものだね。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -87,7 +87,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "GitHubはコードの変更履歴やブランチ管理を前提としたバージョン管理・共同開発サービスであり、単なるファイル保存サービスとは違う",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "ふん、今のはノーカンな。",
     failureLine: "残念、サウナ室から出直してこい。",
     reviewExplanation:
@@ -99,7 +99,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "repository（リポジトリ）",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubのリポジトリって、プロジェクトのファイルとその変更履歴をまとめて管理する場所のことだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -109,7 +109,7 @@ export const githubQuestions = [
       "リポジトリはGitHub社の許可を得た人しか作成できない",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "甘い甘い、100度じゃ足りねえな。",
     reviewExplanation:
@@ -121,7 +121,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "README",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "READMEファイルは、そのプロジェクトが何なのか、使い方などを説明するためのファイルだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -131,7 +131,7 @@ export const githubQuestions = [
       "READMEはIssueやプルリクエストの内容を自動でまとめたログファイルである",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "これだから初心者は……いや今回は負けたわ。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
     reviewExplanation:
@@ -143,7 +143,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "READMEと完成度の勘違い",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubのREADMEがちゃんと書いてあれば、そのアプリはもう完成してる証拠だよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -154,7 +154,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "READMEの充実度とアプリが実際に動くかどうかは別問題で、READMEが立派でも未完成・動作しないコードのことは多い",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "俺に勝つにはまだ10年早い……はずだったのにな。",
     failureLine: "整いすぎて脳みそ茹だったか？",
     reviewExplanation:
@@ -166,7 +166,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "commit",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "コミットするとその内容は自動的にGitHub上のリモートリポジトリにも同時に反映されるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -177,7 +177,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "コミットはローカルリポジトリ内での記録であり、GitHub側に反映するにはpushという別の操作が必要",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "ととのうにはまだ早いな……って言いたかったのに。",
     failureLine: "ロウリュ効きすぎたんじゃねえの。",
     reviewExplanation:
@@ -189,7 +189,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "push",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "pushしたらGitHub上のファイルは更新されるけど、そのぶんローカルのパソコンに残っていたコミット履歴は消えちゃうんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -200,7 +200,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "pushはローカルのコミットをリモートに送る操作であり、ローカル側のコミット履歴はそのまま手元にも残り続ける",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "へえ、やるじゃん……くやしいけど。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
     reviewExplanation:
@@ -212,7 +212,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "clone",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "cloneした後に自分のパソコン側でファイルを変更すると、その変更は自動的に元のGitHub上のリポジトリにも反映されていくんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -223,7 +223,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "cloneは特定時点のコピーを手元に作る操作であり、その後の手元での変更をリモートに反映するにはコミットとpushという別の操作が必要",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
     reviewExplanation:
@@ -235,7 +235,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "pull",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "pullは、リモートリポジトリにある最新の変更を自分のローカル環境に取り込む操作だよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -245,7 +245,7 @@ export const githubQuestions = [
       "pullは他人のリポジトリを自分のアカウントにコピーして独立させる操作である",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "あーもう、サウナ入り直すわ。",
     failureLine: "これだから初心者は。",
     reviewExplanation:
@@ -257,7 +257,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "branch",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "ブランチは1つのリポジトリにつき1個しか作れないから、みんな同じブランチの上で作業するしかないんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -268,7 +268,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "1つのリポジトリの中に複数のブランチを自由に作成でき、機能ごとに分かれて並行作業することができる",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "次はねえぞ、覚えとけよ……とか言っといて負けたわ。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
     reviewExplanation:
@@ -280,7 +280,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "merge",
     difficulty: "hard",
-    fakeMasaoLine:
+    rivalLine:
       "マージすると、片方のブランチの内容は完全に消えてなくなって、もう片方の内容だけが残るんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -291,7 +291,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "マージは片方のブランチに加えられた変更を取り込んで統合する操作であり、統合元のブランチの変更内容が消えるわけではない",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "ふん、今のはノーカンな。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
     reviewExplanation:
@@ -303,7 +303,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "issue",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "Issueは、バグ報告や機能要望、やるべきタスクなどを記録して管理するための機能だよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -313,7 +313,7 @@ export const githubQuestions = [
       "有料プランの契約者しか作成できない機能である",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "は？　偶然だし。",
     failureLine: "これだから初心者は。",
     reviewExplanation:
@@ -325,7 +325,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "pull request",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "プルリクエストを出したら、その時点で自動的にmainブランチにマージされるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -336,7 +336,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "プルリクエストは変更内容をレビューしてもらうための提案であり、レビューを経て誰かが明示的にマージ操作をするまでは取り込まれない",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
     reviewExplanation:
@@ -348,7 +348,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "pull request",
     difficulty: "hard",
-    fakeMasaoLine:
+    rivalLine:
       "プルリクエストを経由するのは技術的に必須のルールで、mainブランチに直接pushすることはGitHub上そもそも不可能なんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -359,7 +359,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "プルリクエストを使う運用は多くのチームで採用される慣習・設定であり、ブランチ保護ルールを設定していなければmainへの直接pushは技術的に可能である",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "整いすぎて脳みそ茹だったか？",
     reviewExplanation:
@@ -371,7 +371,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitHub Pages",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHub Pagesを使えば、どんなプログラミング言語で書かれたサーバーサイドのプログラムでも動かせるすごい機能だよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -382,7 +382,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "GitHub PagesはHTML・CSS・JavaScriptなどの静的なファイルを公開するための仕組みであり、サーバー上で任意言語のプログラムを実行する機能ではない",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "次はねえぞ、覚えとけよ。",
     failureLine: "ロウリュ効きすぎたんじゃねえの。",
     reviewExplanation:
@@ -394,7 +394,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitHub Pages",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "GitHub Pagesを使うと、リポジトリの中身を無料で公開のWebサイトとして公開できるよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -404,7 +404,7 @@ export const githubQuestions = [
       "公開から24時間後に自動的に非公開になる",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "へえ、やるじゃん……くやしいけど。",
     failureLine: "甘い甘い、100度じゃ足りねえな。",
     reviewExplanation:
@@ -416,7 +416,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "deploy（デプロイ）",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubにpushした瞬間、世界中のユーザーが使ってる本番環境にもそのまま自動的に反映されるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -427,7 +427,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "pushはリポジトリの内容を更新するだけの操作であり、本番環境への反映（デプロイ）にはデプロイ用の仕組みを別途設定・実行する必要がある",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "ふん、今のはノーカンな。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
     reviewExplanation:
@@ -439,7 +439,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitHub Actions",
     difficulty: "hard",
-    fakeMasaoLine:
+    rivalLine:
       "GitHub Actionsは、GitHub社の社員がリポジトリを人力でチェックしてくれる有人レビューサービスだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -450,7 +450,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "GitHub ActionsはYAML形式のワークフローに従い、イベントをきっかけに自動でテストやビルドなどを実行する仕組みであり、人による手動レビューではない",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……チッ。まぐれだろ。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
     reviewExplanation:
@@ -462,7 +462,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "GitHub Actions",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHub Actionsを使うと、pushやプルリクエストの作成をきっかけに、テストやビルドなどを自動で実行できるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -472,7 +472,7 @@ export const githubQuestions = [
       "GitHub Actionsで実行できるのはテストのみで、ビルドやデプロイには使えない",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "あーもう、サウナ入り直すわ。",
     failureLine: "これだから初心者は。",
     reviewExplanation:
@@ -484,7 +484,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: ".gitignore",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "`.gitignore`に書いておけば、すでにGitで管理されている（コミット済みの）ファイルも自動的に無視されるようになるよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -495,7 +495,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "`.gitignore`はまだ一度も追跡されていない（untrackedな）ファイルにしか効果がなく、すでに追跡・コミット済みのファイルには効果がない",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
     reviewExplanation:
@@ -507,7 +507,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: ".envと秘密情報の管理",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "うっかりAPIキーを`.env`ファイルごとpushしちゃっても、後で気づいてリポジトリから削除すればもう漏洩の心配はないよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -518,7 +518,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "一度pushしたAPIキーはコミット履歴に残り続け、既に見られたり取得されたりしている可能性があるため、ファイルを削除するだけでは不十分でキー自体を無効化・再発行（ローテーション）する必要がある",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "ふん、今のはノーカンな。",
     failureLine: "整いすぎて脳みそ茹だったか？",
     reviewExplanation:
@@ -531,7 +531,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: ".envと秘密情報の管理",
     difficulty: "hard",
-    fakeMasaoLine:
+    rivalLine:
       "一度GitHubにpushしちゃったAPIキーは、たとえその後すぐにファイルを削除しても、漏洩したものとして扱ってキー自体を再発行（ローテーション）するべきだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -541,7 +541,7 @@ export const githubQuestions = [
       "GitHubにpushした情報は非公開設定にしている限り、外部からは絶対に閲覧不可能である",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
     reviewExplanation:
@@ -554,7 +554,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: ".envと秘密情報の管理",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "プライベートリポジトリになら`.env`ファイルをそのままコミットしても、他人に見られる心配は全くないから安心だよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -565,7 +565,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "プライベートリポジトリでも共同作業者の追加、設定変更による公開、フォーク・クローンの持ち出しなどで秘密情報が広がるリスクは残るため、秘密情報はそもそもコミットしないのが基本",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "次はねえぞ、覚えとけよ。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
     reviewExplanation:
@@ -577,7 +577,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "「GitHubに置いてある＝動く完成品」ではない",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubにソースコードが上がっていれば、それはもうちゃんと動作する完成品だと考えていいよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -588,7 +588,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "GitHubにコードが公開されていることと、それが実際に動作する完成したソフトウェアであることは別問題で、開発途中・依存関係未整備・バグありのコードも大量に公開されている",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……チッ。まぐれだろ。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
     reviewExplanation:
@@ -600,7 +600,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "差分確認（diff）",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubの差分（diff）画面って、緑色の行が削除された行で、赤色の行が新しく追加された行を表してるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -611,7 +611,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "GitHubのdiff表示では、緑色が追加された行、赤色が削除された行を表しており、発言の色の割り当てが逆になっている",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "ふん、今のはノーカンな。",
     failureLine: "甘い甘い、100度じゃ足りねえな。",
     reviewExplanation:
@@ -623,7 +623,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "コミット履歴",
     difficulty: "normal",
-    fakeMasaoLine:
+    rivalLine:
       "GitHubのコミット履歴は、新しくpushするたびにそれまでの履歴が消えて、直近のpush分だけに置き換わっていくんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -634,7 +634,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "コミット履歴は基本的に積み上げ式であり、pushするたびに過去の履歴が消えるのではなく、新しいコミットが追加されて履歴が伸びていく",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "へえ、やるじゃん……くやしいけど。",
     failureLine: "残念、サウナ室から出直してこい。",
     reviewExplanation:
@@ -646,7 +646,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "ローカルとリモートの違い",
     difficulty: "easy",
-    fakeMasaoLine:
+    rivalLine:
       "ローカルリポジトリは自分のパソコンの中にあるGit管理下のプロジェクトのことで、リモートリポジトリはGitHubなど別の場所に置かれているコピーのことだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -656,7 +656,7 @@ export const githubQuestions = [
       "ローカルリポジトリはコミットができず、閲覧専用の存在である",
     ],
     correctChoice: "正しい",
-    isFakeMasaoCorrect: true,
+    isRivalCorrect: true,
     successLine: "は？　偶然だし。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
     reviewExplanation:
@@ -668,7 +668,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "ローカルとリモートの違い",
     difficulty: "hard",
-    fakeMasaoLine:
+    rivalLine:
       "ローカルでコミットを取り消したり（revertやreset）しても、何もしなくてもリモートのGitHub上の履歴には自動的にその変更が反映されるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -679,7 +679,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "ローカルでの取り消し操作はローカルリポジトリ内で完結しており、リモート側に反映するにはpush（場合によってはforce push）という明示的な操作が必要",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
     reviewExplanation:
@@ -691,7 +691,7 @@ export const githubQuestions = [
     storeId: "github",
     topic: "AIにGitHubリポジトリを読ませるときの注意",
     difficulty: "hard",
-    fakeMasaoLine:
+    rivalLine:
       "AIにGitHubのリポジトリを読み込ませて質問すれば、READMEに書いてある通りに実際のコードも完璧に動くかどうかまで保証してくれるんだよ。",
     questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
     choices: [
@@ -702,7 +702,7 @@ export const githubQuestions = [
     ],
     correctChoice:
       "AIはREADMEやコードの内容を要約・解釈する助けにはなるが、実際にコードを実行して動作を保証するものではなく、READMEと実装のズレやAI自身の誤読・誤解説の可能性も残る",
-    isFakeMasaoCorrect: false,
+    isRivalCorrect: false,
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "整いすぎて脳みそ茹だったか？",
     reviewExplanation:

@@ -13,8 +13,18 @@
  */
 import { githubQuestions } from "./questions-github.js";
 import { orcaQuestions } from "./questions-orca.js";
+import { promptEngineeringQuestions } from "./questions-prompt-engineering.js";
+import { claudeCodeQuestions } from "./questions-claude-code.js";
+import { wslQuestions } from "./questions-wsl.js";
+import { obsidianQuestions } from "./questions-obsidian.js";
+import { aiAgentQuestions } from "./questions-ai-agent.js";
 
 export const questionPools = {
   github: githubQuestions,
   orca: orcaQuestions,
+  "prompt-engineering": promptEngineeringQuestions,
+  "claude-code": claudeCodeQuestions,
+  wsl: wslQuestions,
+  obsidian: obsidianQuestions,
+  "ai-agent": aiAgentQuestions,
 };

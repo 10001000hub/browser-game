@@ -1,5 +1,5 @@
 /* =========================================================
-   『俺がまさお』 スタイルシート
+   『熱波論破』 スタイルシート
    Vanilla CSS のみ・外部フォント/CDNなし・画像素材なし
    ========================================================= */
 
@@ -60,7 +60,7 @@ ol {
   --color-ember-deep: #d9480f;
   --color-flash-white: #fff8ef;
 
-  /* 強調（俺がまさおだ！） */
+  /* 強調（決め台詞） */
   --color-accent-gold: #ffd166;
   --color-accent-gold-deep: #b8860b;
 
@@ -588,23 +588,23 @@ body {
   font-weight: 700;
   font-size: var(--fs-small);
 }
-.dialogue-box__speaker--fake {
+.dialogue-box__speaker--rival {
   left: var(--space-3);
   right: auto;
 }
-.dialogue-box__speaker--masao {
+.dialogue-box__speaker--hero {
   left: auto;
   right: var(--space-3);
   background: var(--color-cooldown-blue-deep);
 }
 
-/* 会話シーン背景（sauna.jpg）＋左右の立ち絵 */
+/* 会話シーン背景（sauna-room.svg）＋左右の立ち絵 */
 .sauna-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   background-image: linear-gradient(rgba(10, 6, 4, 0.55), rgba(10, 6, 4, 0.7)),
-    url("../assets/images/sauna.jpg");
+    url("../assets/images/sauna-room.svg");
   background-size: cover;
   background-position: center;
 }
@@ -623,10 +623,10 @@ body {
   object-fit: contain;
   transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
-.portrait--fake {
+.portrait--rival {
   left: 0;
 }
-.portrait--masao {
+.portrait--hero {
   right: 0;
 }
 .portrait.is-active {
@@ -669,13 +669,13 @@ body {
   }
 }
 
-/* 3.5 「俺がまさおだ」演出 */
-.screen--masao-reveal {
+/* 3.5 「ウラ、取らせてもらう」演出 */
+.screen--reveal {
   align-items: center;
   justify-content: center;
   background: var(--color-bg);
 }
-.masao-flash {
+.reveal-flash {
   position: absolute;
   inset: 0;
   background: var(--color-flash-white);
@@ -683,10 +683,10 @@ body {
   z-index: var(--z-overlay);
   pointer-events: none;
 }
-.masao-flash.is-flashing {
-  animation: masao-flash-anim 0.2s ease-out forwards;
+.reveal-flash.is-flashing {
+  animation: reveal-flash-anim 0.2s ease-out forwards;
 }
-.masao-text {
+.reveal-text {
   font-size: clamp(2.4rem, 13vw, 4.5rem);
   font-weight: 900;
   color: var(--color-accent-gold);
@@ -696,10 +696,13 @@ body {
   transform: scale(0.6);
   z-index: var(--z-content);
 }
-.masao-text.is-revealed {
-  animation: masao-text-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) forwards;
+.reveal-text.is-revealed {
+  animation: reveal-text-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) forwards;
 }
-.masao-text.is-glowing {
+.reveal-text.is-glowing {
+  /* ポップの forwards が外れても表示したままにする */
+  opacity: 1;
+  transform: scale(1);
   animation: heat-glow-pulse-text 1.4s ease-in-out infinite;
 }
 
@@ -748,11 +751,15 @@ body {
 .feedback-toast {
   position: fixed;
   left: 50%;
-  top: 30%;
+  top: 46%;
   transform: translate(-50%, -50%);
   z-index: var(--z-toast);
   pointer-events: none;
   opacity: 0;
+  width: min(88vw, 420px);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 20px;
+  background: rgba(16, 12, 10, 0.88);
   font-size: var(--fs-h1);
   font-weight: 900;
   text-align: center;
@@ -981,17 +988,6 @@ body {
   font-size: 0.75rem;
   color: var(--color-text-faint);
 }
-.review-source-video {
-  margin-top: var(--space-4);
-  font-size: var(--fs-small);
-  color: var(--color-text-faint);
-  text-align: center;
-  word-break: break-all;
-}
-.review-source-video__link {
-  color: var(--color-amber);
-  text-decoration: underline;
-}
 .review-card--unreached {
   opacity: 0.5;
 }
@@ -1081,7 +1077,7 @@ body {
   }
 }
 
-@keyframes masao-flash-anim {
+@keyframes reveal-flash-anim {
   0% {
     opacity: 0;
   }
@@ -1093,7 +1089,7 @@ body {
   }
 }
 
-@keyframes masao-text-pop {
+@keyframes reveal-text-pop {
   0% {
     opacity: 0;
     transform: scale(0.6);
@@ -1192,7 +1188,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .steam-blob,
-  .masao-text.is-glowing,
+  .reveal-text.is-glowing,
   .continue-scrim,
   [data-heat] .stamina-ring,
   .choice.is-incorrect,
@@ -1336,4 +1332,94 @@ body {
 .mute-toggle:focus-visible {
   outline: 2px solid var(--color-amber);
   outline-offset: 2px;
+}
+
+/* ---------- オリジナルキャスト（ミナト / 熱波師ゴウ）の配置 ---------- */
+.title-cast {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0;
+  height: min(30vh, 220px);
+  margin-bottom: calc(-1 * var(--space-3));
+  z-index: var(--z-content);
+}
+.title-cast img {
+  height: 100%;
+  width: auto;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+}
+.title-cast__rival {
+  transform: translateX(14%) scaleX(-1);
+  filter: brightness(0.9) drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+}
+.title-cast__hero {
+  transform: translateX(-14%);
+}
+.logo-sub {
+  color: var(--color-ember);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  font-size: var(--fs-body);
+  z-index: var(--z-content);
+}
+
+/* クイズ中もサウナ室とゴウを見せる（空白を埋め、誰と勝負しているかを常に示す） */
+.screen--quiz {
+  overflow: hidden;
+}
+.sauna-bg--quiz {
+  background-image: linear-gradient(rgba(10, 6, 4, 0.72), rgba(10, 6, 4, 0.9)),
+    url("../assets/images/sauna-room.svg");
+}
+.screen--quiz > :not(.sauna-bg):not(.feedback-toast) {
+  position: relative;
+  z-index: var(--z-content);
+}
+.quiz-rival {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+.quiz-rival__portrait {
+  flex: 0 0 auto;
+  width: min(28vw, 116px);
+  height: auto;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+}
+.quiz-rival .bubble {
+  flex: 1 1 auto;
+  max-width: none;
+  margin-bottom: var(--space-4);
+}
+.quiz-rival .bubble::after {
+  left: -9px;
+  bottom: 18px;
+  border-width: 8px 10px 8px 0;
+  border-color: transparent var(--color-bg-elevated) transparent transparent;
+}
+.screen--quiz .quiz-question {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--color-amber);
+  margin: 0;
+}
+
+/* 「ウラ、取らせてもらう」演出の主人公カットイン */
+.reveal-portrait {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: min(58vh, 420px);
+  width: auto;
+  transform: translateX(-50%);
+  opacity: 0.35;
+  z-index: var(--z-bg, 1);
+  pointer-events: none;
+}
+
+.review-card__link {
+  color: var(--color-cooldown-blue);
+  word-break: break-all;
 }
