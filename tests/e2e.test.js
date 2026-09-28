@@ -22,7 +22,6 @@ const require = createRequire(import.meta.url);
 function loadJSDOM() {
   const candidates = ["jsdom"];
   if (process.env.JSDOM_PATH) candidates.push(process.env.JSDOM_PATH);
-  candidates.push("/home/user/.hermes/hermes-agent/node_modules/jsdom");
   for (const spec of candidates) {
     try {
       return require(spec).JSDOM;
@@ -136,6 +135,31 @@ test("E2E", suiteOptions, async (t) => {
       const result = env.document.querySelector('[data-screen="result"]');
       assert.ok(result, "結果画面に到達していない");
       assert.equal(result.dataset.result, "win", "勝利になっていない");
+    } finally {
+      env.teardown();
+    }
+  });
+
+  await t.test("キーボード: 画面が変わるとセリフへフォーカスが移り、数字キーで答えられる", async () => {
+    const env = await bootGame();
+    try {
+      navigateToQuiz(env, "80");
+      const section = env.document.querySelector('[data-screen="quiz-battle"]');
+      assert.equal(
+        env.document.activeElement,
+        section.querySelector(".bubble__text"),
+        "クイズ画面でゴウのセリフにフォーカスが移っていない",
+      );
+      const first = section.querySelectorAll(".choice")[0];
+      env.document.dispatchEvent(
+        new env.window.KeyboardEvent("keydown", { key: "1", bubbles: true, cancelable: true }),
+      );
+      const toast = section.querySelector(".feedback-toast");
+      assert.ok(
+        first.classList.contains("is-correct") || first.disabled,
+        "数字キー1で1番目の選択肢が押されていない",
+      );
+      assert.ok(toast.classList.contains("is-correct") || toast.classList.contains("is-incorrect"));
     } finally {
       env.teardown();
     }

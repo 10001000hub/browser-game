@@ -54,6 +54,22 @@ function mountScreen(mountFn, context) {
   }
   const { unmount } = mountFn(screenRoot, context);
   currentUnmount = unmount;
+  focusScreen(screenRoot);
+}
+
+/**
+ * 画面を切り替えたら、キーボードと読み上げの位置を新しい画面へ移す。
+ * data-autofocus を付けた要素、なければ最初の見出しへフォーカスする。
+ * @param {HTMLElement|null} root
+ */
+function focusScreen(root) {
+  if (!root) return;
+  const target = root.querySelector("[data-autofocus]") || root.querySelector("h1, h2");
+  if (!target) return;
+  if (!target.hasAttribute("tabindex") && !target.matches("button, a, input")) {
+    target.setAttribute("tabindex", "-1");
+  }
+  target.focus({ preventScroll: true });
 }
 
 function setRingVisible(visible) {
