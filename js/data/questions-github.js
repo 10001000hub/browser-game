@@ -1,712 +1,663 @@
 /**
- * 「赤坂 GitHub 店」— GitHub初心者向け問題データ（30問）
+ * 「赤坂 GitHub 店」— GitHub と Git の基本（30問）
  *
- * ゲームの仕組み:
- *   熱波師ゴウがGitHub関連の発言をする。プレイヤーはその発言が
- *   「正しいか」「間違っているならどこがどう間違っているか」を4択で答える。
- *   全問、選択肢の1つは必ず "正しい" という文字列。
+ * 出典は GitHub Docs（docs.github.com）と Git 公式ドキュメント（git-scm.com）に限る（2026-09-28 確認）。
  *
- * @typedef {Object} GithubQuestion
- * @property {string} id                 - "gh-001" 形式の一意なID
- * @property {string} storeId            - 常に "github"
- * @property {string} topic              - 出題テーマ（日本語）
- * @property {"easy"|"normal"|"hard"} difficulty
- * @property {string} rivalLine       - 熱波師ゴウの発言（口語・断定調）
- * @property {string} questionText        - プレイヤーへの設問文
- * @property {string[]} choices           - 4択。必ず "正しい" を含む
- * @property {string} correctChoice       - choices内の文字列と完全一致する正解
- * @property {boolean} isRivalCorrect - ゴウの発言が正しいかどうか
- * @property {string} successLine         - 正解時のゴウの捨て台詞
- * @property {string} failureLine         - 不正解時のゴウの煽り台詞
- * @property {string} reviewExplanation   - 解説（3〜5文）
- * @property {string} sourceMemo          - 参考にした一般的な公式情報源
- *
- * 内訳: 全30問 / isRivalCorrect true=9問, false=21問
- *       difficulty: easy=10, normal=14, hard=6
- *
- * @type {GithubQuestion[]}
+ * 内訳: 全30問 / ゴウが正しい=9問, 間違い=21問
  */
-export const githubQuestions = [
+import { defineQuestions } from "./defineQuestions.js";
+
+const src = (...pages) => pages.map(([name, url]) => `${name} ${url}`).join(" / ");
+const S = {
+  about: [
+    "GitHub Docs「About Git」",
+    "https://docs.github.com/en/get-started/using-git/about-git"
+  ],
+  hello: [
+    "GitHub Docs「Hello World」",
+    "https://docs.github.com/en/get-started/using-github/hello-world"
+  ],
+  repos: [
+    "GitHub Docs「About repositories」",
+    "https://docs.github.com/en/repositories/creating-and-managing-repositories/about-repositories"
+  ],
+  readme: [
+    "GitHub Docs「About READMEs」",
+    "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
+  ],
+  commits: [
+    "GitHub Docs「Commits」",
+    "https://docs.github.com/en/pull-requests/reference/commits"
+  ],
+  push: [
+    "GitHub Docs「Pushing commits to a remote repository」",
+    "https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository"
+  ],
+  clone: [
+    "GitHub Docs「Cloning a repository」",
+    "https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository"
+  ],
+  pull: [
+    "GitHub Docs「Getting changes from a remote repository」",
+    "https://docs.github.com/en/get-started/using-git/getting-changes-from-a-remote-repository"
+  ],
+  branches: [
+    "GitHub Docs「Branches」",
+    "https://docs.github.com/en/pull-requests/reference/branches"
+  ],
+  conflicts: [
+    "GitHub Docs「Merge conflicts」",
+    "https://docs.github.com/en/pull-requests/reference/merge-conflicts"
+  ],
+  issues: [
+    "GitHub Docs「About issues」",
+    "https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/about-issues"
+  ],
+  prs: [
+    "GitHub Docs「Pull requests」",
+    "https://docs.github.com/en/pull-requests/reference/pull-requests"
+  ],
+  protected: [
+    "GitHub Docs「About protected branches」",
+    "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches"
+  ],
+  pages: [
+    "GitHub Docs「What is GitHub Pages?」",
+    "https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages"
+  ],
+  cd: [
+    "GitHub Docs「Continuous deployment」",
+    "https://docs.github.com/en/actions/get-started/continuous-deployment"
+  ],
+  actions: [
+    "GitHub Docs「Understanding GitHub Actions」",
+    "https://docs.github.com/en/actions/get-started/understand-github-actions"
+  ],
+  events: [
+    "GitHub Docs「Events that trigger workflows」",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
+  ],
+  gitignore: [
+    "Git 公式ドキュメント「gitignore」",
+    "https://git-scm.com/docs/gitignore"
+  ],
+  sensitive: [
+    "GitHub Docs「Removing sensitive data from a repository」",
+    "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
+  ],
+  scanning: [
+    "GitHub Docs「Secret scanning」",
+    "https://docs.github.com/en/code-security/concepts/secret-security/secret-scanning"
+  ],
+  visibility: [
+    "GitHub Docs「Setting repository visibility」",
+    "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility"
+  ],
+  review: [
+    "GitHub Docs「Reviewing proposed changes in a pull request」",
+    "https://docs.github.com/en/pull-requests/how-tos/review-pull-requests/reviewing-proposed-changes-in-a-pull-request"
+  ],
+  gitlog: [
+    "Git 公式ドキュメント「git-log」",
+    "https://git-scm.com/docs/git-log"
+  ],
+  remotes: [
+    "GitHub Docs「About remote repositories」",
+    "https://docs.github.com/en/get-started/git-basics/about-remote-repositories"
+  ],
+  revert: [
+    "Git 公式ドキュメント「git-revert」",
+    "https://git-scm.com/docs/git-revert"
+  ],
+  reset: [
+    "Git 公式ドキュメント「git-reset」",
+    "https://git-scm.com/docs/git-reset"
+  ],
+  copilot: [
+    "GitHub Docs「Responsible use of GitHub Copilot Chat」",
+    "https://docs.github.com/en/copilot/responsible-use/chat"
+  ]
+};
+
+export const githubQuestions = defineQuestions("github", [
   {
     id: "gh-001",
-    storeId: "github",
     topic: "GitとGitHubの違い",
     difficulty: "easy",
-    rivalLine: "GitとGitHubは同じものだよ。呼び方が違うだけ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitとGitHubは同じものだよ。呼び方が違うだけ。",
     choices: [
       "正しい",
-      "Gitはバージョン管理システム、GitHubはそれをホスティングするWebサービスで別物",
-      "GitはGitHub社が作ったツールなので、GitHubがないと使えない",
-      "GitHubはGitの有料版のことである",
+      "GitはGitHub社が開発した道具なので、GitHubにログインしていないと使えない",
+      "Gitは履歴を管理する道具、GitHubはGitのリポジトリを預かるWebサービスで別物",
+      "GitHubはGitの有料版で、中身の仕組みも使い方もまったく同じもの",
     ],
-    correctChoice:
-      "Gitはバージョン管理システム、GitHubはそれをホスティングするWebサービスで別物",
-    isRivalCorrect: false,
+    answer: 2,
+    explain:
+      "Gitはローカルのパソコン上だけでも動作するバージョン管理システムで、GitHub社が生まれる前から存在します。GitHubはそのGitリポジトリをインターネット上でホスティングし、共同作業やレビューをしやすくするWebサービスです。GitはGitHub社製ではなくLinus Torvaldsが開発したオープンソースのツールなので、GitHubがなくてもGitだけで使えます。有料版云々という話でもなく、単純に「ツール」と「そのツールを使ったサービス」という別レイヤーの話です。",
+    source: src(S.about),
     successLine: "……チッ。まぐれだろ。",
     failureLine: "ほら見ろ。その程度か。",
-    reviewExplanation:
-      "Gitはローカルのパソコン上だけでも動作するバージョン管理システムで、GitHub社が生まれる前から存在します。GitHubはそのGitリポジトリをインターネット上でホスティングし、共同作業やレビューをしやすくするWebサービスです。GitはGitHub社製ではなくLinus Torvaldsが開発したオープンソースのツールなので、GitHubがなくてもGitだけで使えます。有料版云々という話でもなく、単純に「ツール」と「そのツールを使ったサービス」という別レイヤーの話です。",
-    sourceMemo: "GitHub Docs: About Git / Git公式サイト About",
   },
   {
     id: "gh-002",
-    storeId: "github",
     topic: "GitHubとは何か",
     difficulty: "easy",
-    rivalLine:
-      "GitHubはGitリポジトリをインターネット上に置いて、みんなで一緒にコードを開発できるようにするWebサービスだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubはGitリポジトリをインターネット上に置いて、みんなで一緒にコードを開発できるようにするWebサービスだよ。",
     choices: [
       "GitHubはWebサービスではなく、パソコンにインストールする専用アプリのことである",
       "正しい",
       "GitHubは個人利用専用で、複数人での共同開発には対応していない",
       "GitHubはGitとはまったく別のバージョン管理の仕組みを使っている",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 1,
+    explain:
+      "この発言は正しいです。GitHubはGitリポジトリをホスティングし、Issueやプルリクエストなどの機能を通じて複数人での共同開発をしやすくするWebサービスです。ブラウザからアクセスできる点が特徴で、専用アプリのインストールが必須というわけではありません。個人利用はもちろん、企業やOSSコミュニティでのチーム開発にも広く使われています。裏側で使われているバージョン管理の仕組みはGitそのものです。",
+    source: src(S.hello),
     successLine: "は？　偶然だし。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
-    reviewExplanation:
-      "この発言は正しいです。GitHubはGitリポジトリをホスティングし、Issueやプルリクエストなどの機能を通じて複数人での共同開発をしやすくするWebサービスです。ブラウザからアクセスできる点が特徴で、専用アプリのインストールが必須というわけではありません。個人利用はもちろん、企業やOSSコミュニティでのチーム開発にも広く使われています。裏側で使われているバージョン管理の仕組みはGitそのものです。",
-    sourceMemo: "GitHub Docs: Hello World / GitHub about page",
   },
   {
     id: "gh-003",
-    storeId: "github",
     topic: "GitHubとは何か",
     difficulty: "easy",
-    rivalLine:
-      "GitHubは自分のパソコンにあるファイルを保存しておくためのオンラインストレージだよ。Dropboxとだいたい同じようなものだね。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubは自分のパソコンにあるファイルを保存しておくためのオンラインストレージだよ。Dropboxとだいたい同じようなものだね。",
     choices: [
       "正しい",
-      "GitHubはコードの変更履歴やブランチ管理を前提としたバージョン管理・共同開発サービスであり、単なるファイル保存サービスとは違う",
-      "GitHubはファイルの保存すらできず、コードの表示専用のサービスである",
-      "GitHubはDropboxよりも保存容量がはるかに大きいという点だけが違う",
+      "変更履歴とブランチを前提にした共同開発の場で、単なるファイル置き場とは違う",
+      "Dropboxと違うのは保存容量が無制限という点だけで、使い道はほとんど同じ",
+      "パソコンのフォルダと自動で同期されるので、使い方もDropboxと同じ",
     ],
-    correctChoice:
-      "GitHubはコードの変更履歴やブランチ管理を前提としたバージョン管理・共同開発サービスであり、単なるファイル保存サービスとは違う",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "GitHubは単なるファイルの置き場所ではなく、Gitによる変更履歴の管理、ブランチを使った並行作業、プルリクエストによるレビューなど、開発プロセスそのものを支える仕組みを持つサービスです。Dropboxのような汎用ストレージは「最新版のファイル同期」が主目的ですが、GitHubは「誰がいつ何を変更したか」を細かく追跡できる点が本質的に異なります。また、パソコンのフォルダと自動で同期する仕組みでもなく、手元の変更はcommitとpushで明示的に送ります。",
+    source: src(S.repos),
     successLine: "ふん、今のはノーカンな。",
     failureLine: "残念、サウナ室から出直してこい。",
-    reviewExplanation:
-      "GitHubは単なるファイルの置き場所ではなく、Gitによる変更履歴の管理、ブランチを使った並行作業、プルリクエストによるレビューなど、開発プロセスそのものを支える仕組みを持つサービスです。Dropboxのような汎用ストレージは「最新版のファイル同期」が主目的ですが、GitHubは「誰がいつ何を変更したか」を細かく追跡できる点が本質的に異なります。ファイルの保存自体はもちろんできるので、保存できないという選択肢も誤りです。",
-    sourceMemo: "GitHub Docs: About repositories",
   },
   {
     id: "gh-004",
-    storeId: "github",
     topic: "repository（リポジトリ）",
     difficulty: "easy",
-    rivalLine:
-      "GitHubのリポジトリって、プロジェクトのファイルとその変更履歴をまとめて管理する場所のことだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubのリポジトリって、プロジェクトのファイルとその変更履歴をまとめて管理する場所のことだよ。",
     choices: [
       "リポジトリはファイルだけを保存する場所で、変更履歴は別サービスで管理する必要がある",
       "正しい",
       "リポジトリは1つのアカウントにつき1個しか作れない",
       "リポジトリはGitHub社の許可を得た人しか作成できない",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 1,
+    explain:
+      "この発言は正しいです。リポジトリ（repository）は、プロジェクトのファイル一式に加えて、それらがどう変更されてきたかというコミット履歴もまとめて保持する入れ物です。アカウント1つにつき複数のリポジトリを自由に作成でき、個人アカウントでも無料で新規作成が可能なので、数の制限や許可制という点も誤りです。",
+    source: src(S.repos),
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "甘い甘い、100度じゃ足りねえな。",
-    reviewExplanation:
-      "この発言は正しいです。リポジトリ（repository）は、プロジェクトのファイル一式に加えて、それらがどう変更されてきたかというコミット履歴もまとめて保持する入れ物です。アカウント1つにつき複数のリポジトリを自由に作成でき、個人アカウントでも無料で新規作成が可能なので、数の制限や許可制という点も誤りです。",
-    sourceMemo: "GitHub Docs: About repositories",
   },
   {
     id: "gh-005",
-    storeId: "github",
     topic: "README",
     difficulty: "easy",
-    rivalLine:
-      "READMEファイルは、そのプロジェクトが何なのか、使い方などを説明するためのファイルだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "READMEファイルは、そのプロジェクトが何なのか、使い方などを説明するためのファイルだよ。",
     choices: [
       "READMEはプログラムの実行に必須のファイルで、削除するとアプリが動かなくなる",
       "READMEはGitHubが自動生成するファイルなので、人間が書く必要はない",
       "正しい",
       "READMEはIssueやプルリクエストの内容を自動でまとめたログファイルである",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 2,
+    explain:
+      "この発言は正しいです。READMEはリポジトリのトップページに表示される説明文書で、プロジェクトの概要、使い方、セットアップ手順などを人間向けに書いておくものです。多くの場合Markdown形式で書かれますが、あくまで説明用のドキュメントであり、プログラムの動作そのものには関与しません。GitHubが内容を自動生成するわけでもなく、執筆は開発者自身が行います。",
+    source: src(S.readme),
     successLine: "これだから初心者は……いや今回は負けたわ。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
-    reviewExplanation:
-      "この発言は正しいです。READMEはリポジトリのトップページに表示される説明文書で、プロジェクトの概要、使い方、セットアップ手順などを人間向けに書いておくものです。多くの場合Markdown形式で書かれますが、あくまで説明用のドキュメントであり、プログラムの動作そのものには関与しません。GitHubが内容を自動生成するわけでもなく、執筆は開発者自身が行います。",
-    sourceMemo: "GitHub Docs: About READMEs",
   },
   {
     id: "gh-006",
-    storeId: "github",
     topic: "READMEと完成度の勘違い",
     difficulty: "normal",
-    rivalLine:
-      "GitHubのREADMEがちゃんと書いてあれば、そのアプリはもう完成してる証拠だよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubのREADMEがちゃんと書いてあれば、そのアプリはもう完成してる証拠だよ。",
     choices: [
       "正しい",
-      "READMEの充実度とアプリが実際に動くかどうかは別問題で、READMEが立派でも未完成・動作しないコードのことは多い",
-      "READMEはGitHubによって内容の正確性が自動でチェックされているので、書いてある内容は必ず実現されている",
-      "READMEが書いてあるリポジトリは、GitHub運営の審査に合格したものだけである",
+      "READMEが立派でも、コードが動くか・完成しているかは別に確かめる必要がある",
+      "READMEはGitHubが内容を自動で検証しているので、書かれている機能は必ず動く",
+      "READMEがあるのは公開審査に通ったリポジトリだけなので、完成品と言える",
     ],
-    correctChoice:
-      "READMEの充実度とアプリが実際に動くかどうかは別問題で、READMEが立派でも未完成・動作しないコードのことは多い",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "READMEはあくまで開発者が「書いた」説明文であり、内容の正確性や実装の完成度をGitHubが自動でチェックしてくれるわけではありません。理想を先に書いてから実装が追いついていないケースや、開発初期のまま更新されずに残っているケースも珍しくありません。実際に動くかどうかを確認するには、コードを読む・実行してみる・テストを確認するといった作業が別途必要です。GitHubに審査制度があるという事実もありません。",
+    source: src(S.readme),
     successLine: "俺に勝つにはまだ10年早い……はずだったのにな。",
     failureLine: "整いすぎて脳みそ茹だったか？",
-    reviewExplanation:
-      "READMEはあくまで開発者が「書いた」説明文であり、内容の正確性や実装の完成度をGitHubが自動でチェックしてくれるわけではありません。理想を先に書いてから実装が追いついていないケースや、開発初期のまま更新されずに残っているケースも珍しくありません。実際に動くかどうかを確認するには、コードを読む・実行してみる・テストを確認するといった作業が別途必要です。GitHubに審査制度があるという事実もありません。",
-    sourceMemo: "GitHub Docs: About READMEs（一般的な留意事項）",
   },
   {
     id: "gh-007",
-    storeId: "github",
     topic: "commit",
     difficulty: "easy",
-    rivalLine:
-      "コミットするとその内容は自動的にGitHub上のリモートリポジトリにも同時に反映されるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "コミットするとその内容は自動的にGitHub上のリモートリポジトリにも同時に反映されるんだよ。",
     choices: [
       "正しい",
-      "コミットはローカルリポジトリ内での記録であり、GitHub側に反映するにはpushという別の操作が必要",
-      "コミットはGitHub上でしかできない操作で、ローカルでは行えない",
-      "コミットするとファイルが暗号化されてリモートに送信される",
+      "コミットはGitHub上でしかできず、手元のパソコンでは記録できない",
+      "コミットは手元のリポジトリへの記録で、GitHubへ送るには別にpushが要る",
+      "コミットは自動で反映されるが、GitHub側の画面に表示されるのは翌日以降になる",
     ],
-    correctChoice:
-      "コミットはローカルリポジトリ内での記録であり、GitHub側に反映するにはpushという別の操作が必要",
-    isRivalCorrect: false,
+    answer: 2,
+    explain:
+      "コミットはあくまで自分のパソコン内（ローカルリポジトリ）に変更の記録を残す操作です。この時点ではGitHub上のリモートリポジトリには何の変化もありません。ローカルの変更をGitHubに反映させるにはpush操作が必要で、pushして初めて他の人からも見える状態になります。コミット自体はローカルでもGitHub上のWeb編集でも行えるので、GitHub上でしかできないという説明も誤りです。",
+    source: src(S.commits, S.push),
     successLine: "ととのうにはまだ早いな……って言いたかったのに。",
     failureLine: "ロウリュ効きすぎたんじゃねえの。",
-    reviewExplanation:
-      "コミットはあくまで自分のパソコン内（ローカルリポジトリ）に変更の記録を残す操作です。この時点ではGitHub上のリモートリポジトリには何の変化もありません。ローカルの変更をGitHubに反映させるにはpush操作が必要で、pushして初めて他の人からも見える状態になります。コミット自体はローカルでもGitHub上のWeb編集でも行えるので、GitHub上でしかできないという説明も誤りです。",
-    sourceMemo: "GitHub Docs: Git commit / About commits",
   },
   {
     id: "gh-008",
-    storeId: "github",
     topic: "push",
     difficulty: "normal",
-    rivalLine:
-      "pushしたらGitHub上のファイルは更新されるけど、そのぶんローカルのパソコンに残っていたコミット履歴は消えちゃうんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "pushしたらGitHub上のファイルは更新されるけど、そのぶんローカルのパソコンに残っていたコミット履歴は消えちゃうんだよ。",
     choices: [
       "正しい",
-      "pushはローカルのコミットをリモートに送る操作であり、ローカル側のコミット履歴はそのまま手元にも残り続ける",
-      "pushするとリモート側の履歴が消え、ローカルの履歴だけが正になる",
-      "pushは履歴を圧縮してファイルサイズを小さくするための操作である",
+      "消えるのは手元ではなくリモート側の履歴で、すべて手元の内容に置き換わる",
+      "pushは送ったコミットを圧縮するので、手元では1つにまとめられる",
+      "pushは手元のコミットをリモートへ送るだけで、手元の履歴はそのまま残る",
     ],
-    correctChoice:
-      "pushはローカルのコミットをリモートに送る操作であり、ローカル側のコミット履歴はそのまま手元にも残り続ける",
-    isRivalCorrect: false,
+    answer: 3,
+    explain:
+      "pushは、ローカルリポジトリに積み上がったコミットをリモートリポジトリ（GitHub）に送って反映させる操作です。この操作によってローカル側のコミット履歴が失われることはなく、pushした後もローカルとリモートの両方に同じ履歴が存在する状態になります。リモート側の履歴が消えるという説明や、履歴圧縮のための操作という説明もいずれも誤りです。",
+    source: src(S.push),
     successLine: "へえ、やるじゃん……くやしいけど。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
-    reviewExplanation:
-      "pushは、ローカルリポジトリに積み上がったコミットをリモートリポジトリ（GitHub）に送って反映させる操作です。この操作によってローカル側のコミット履歴が失われることはなく、pushした後もローカルとリモートの両方に同じ履歴が存在する状態になります。リモート側の履歴が消えるという説明や、履歴圧縮のための操作という説明もいずれも誤りです。",
-    sourceMemo: "GitHub Docs: Pushing commits to a remote repository",
   },
   {
     id: "gh-009",
-    storeId: "github",
     topic: "clone",
     difficulty: "normal",
-    rivalLine:
-      "cloneした後に自分のパソコン側でファイルを変更すると、その変更は自動的に元のGitHub上のリポジトリにも反映されていくんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "cloneした後に自分のパソコン側でファイルを変更すると、その変更は自動的に元のGitHub上のリポジトリにも反映されていくんだよ。",
     choices: [
       "正しい",
-      "cloneは特定時点のコピーを手元に作る操作であり、その後の手元での変更をリモートに反映するにはコミットとpushという別の操作が必要",
-      "cloneするとリモート側のリポジトリはロックされ、誰も変更できなくなる",
-      "cloneは読み取り専用のコピーを作る操作で、そもそも手元で編集すること自体ができない",
+      "cloneはその時点のコピーを作るだけで、変更を戻すにはcommitとpushが要る",
+      "clone中はリモートがロックされ、手元の変更が終わるまで誰も編集できない",
+      "cloneで作ったコピーは読み取り専用なので、手元で編集すること自体ができない",
     ],
-    correctChoice:
-      "cloneは特定時点のコピーを手元に作る操作であり、その後の手元での変更をリモートに反映するにはコミットとpushという別の操作が必要",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "cloneは、GitHub上にあるリポジトリのその時点の内容と履歴を丸ごと自分のパソコンにコピーしてくる操作です。しかしこれは一度きりのコピー動作であり、その後にローカルでファイルを編集しても自動的にリモートへ反映されることはありません。変更を反映させるには、変更内容をコミットしてからpushするという明示的な操作が必要です。cloneした後もファイルの編集自体は普通に行えるので、読み取り専用という説明も誤りです。",
+    source: src(S.clone),
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
-    reviewExplanation:
-      "cloneは、GitHub上にあるリポジトリのその時点の内容と履歴を丸ごと自分のパソコンにコピーしてくる操作です。しかしこれは一度きりのコピー動作であり、その後にローカルでファイルを編集しても自動的にリモートへ反映されることはありません。変更を反映させるには、変更内容をコミットしてからpushするという明示的な操作が必要です。cloneした後もファイルの編集自体は普通に行えるので、読み取り専用という説明も誤りです。",
-    sourceMemo: "GitHub Docs: Cloning a repository",
   },
   {
     id: "gh-010",
-    storeId: "github",
     topic: "pull",
     difficulty: "normal",
-    rivalLine:
-      "pullは、リモートリポジトリにある最新の変更を自分のローカル環境に取り込む操作だよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "pullは、リモートリポジトリにある最新の変更を自分のローカル環境に取り込む操作だよ。",
     choices: [
-      "pullはローカルの変更をリモートに送る操作であり、説明が逆である",
       "正しい",
-      "pullはリモートリポジトリを完全に削除して作り直す操作である",
-      "pullは他人のリポジトリを自分のアカウントにコピーして独立させる操作である",
+      "pullは手元の変更をリモートへ送る操作で、説明が逆になっている",
+      "pullは最新の変更を確認するだけで、手元のファイルは変わらない",
+      "pullは他人のリポジトリを自分のアカウントに複製して独立させる操作",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 0,
+    explain:
+      "この発言は正しいです。pullは、リモートリポジトリの最新の変更を取得（fetch）し、それを自分のローカルブランチに統合（merge）するところまでを一気に行う操作です。手元の作業を最新の状態に追いつかせたいときによく使います。ローカルからリモートへ送る操作はpushであり、pullとは向きが逆なので、それを混同した説明は誤りです。他人のリポジトリを自分名義にコピーする操作はforkと呼ばれ、pullとは別物です。変更を確認するだけで手元のファイルを変えない操作はfetchで、pullはfetchしたうえで手元に取り込みます。",
+    source: src(S.pull),
     successLine: "あーもう、サウナ入り直すわ。",
     failureLine: "これだから初心者は。",
-    reviewExplanation:
-      "この発言は正しいです。pullは、リモートリポジトリの最新の変更を取得（fetch）し、それを自分のローカルブランチに統合（merge）するところまでを一気に行う操作です。手元の作業を最新の状態に追いつかせたいときによく使います。ローカルからリモートへ送る操作はpushであり、pullとは向きが逆なので、それを混同した説明は誤りです。他人のリポジトリを自分名義にコピーする操作はforkと呼ばれ、pullとは別物です。",
-    sourceMemo: "GitHub Docs: Getting changes from a remote repository (fetch, pull)",
   },
   {
     id: "gh-011",
-    storeId: "github",
     topic: "branch",
     difficulty: "normal",
-    rivalLine:
-      "ブランチは1つのリポジトリにつき1個しか作れないから、みんな同じブランチの上で作業するしかないんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "ブランチは1つのリポジトリにつき1個しか作れないから、みんな同じブランチの上で作業するしかないんだよ。",
     choices: [
       "正しい",
-      "1つのリポジトリの中に複数のブランチを自由に作成でき、機能ごとに分かれて並行作業することができる",
-      "ブランチは有料プランでのみ複数作成でき、無料プランでは1個までに制限されている",
-      "ブランチは1人のユーザーにつき1個までしか作成できない",
+      "無料プランではブランチは1本までで、複数作るには有料プランの契約が要る",
+      "ブランチは1人1本までなので、参加している人数分しか作れない",
+      "1つのリポジトリに複数のブランチを作れ、機能ごとに並行して作業できる",
     ],
-    correctChoice:
-      "1つのリポジトリの中に複数のブランチを自由に作成でき、機能ごとに分かれて並行作業することができる",
-    isRivalCorrect: false,
+    answer: 3,
+    explain:
+      "ブランチはリポジトリの中に何個でも自由に作成できる、履歴の枝分かれです。機能追加ごとにブランチを分けたり、個人ごとに作業ブランチを分けたりすることで、お互いの作業がぶつからないように並行して開発を進められます。この機能はGitHubの無料プランでも制限なく使えるため、有料プランでのみ複数作成できるという説明も誤りです。",
+    source: src(S.branches),
     successLine: "次はねえぞ、覚えとけよ……とか言っといて負けたわ。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
-    reviewExplanation:
-      "ブランチはリポジトリの中に何個でも自由に作成できる、履歴の枝分かれです。機能追加ごとにブランチを分けたり、個人ごとに作業ブランチを分けたりすることで、お互いの作業がぶつからないように並行して開発を進められます。この機能はGitHubの無料プランでも制限なく使えるため、有料プランでのみ複数作成できるという説明も誤りです。",
-    sourceMemo: "GitHub Docs: About branches",
   },
   {
     id: "gh-012",
-    storeId: "github",
     topic: "merge",
     difficulty: "hard",
-    rivalLine:
-      "マージすると、片方のブランチの内容は完全に消えてなくなって、もう片方の内容だけが残るんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "マージすると、片方のブランチの内容は完全に消えてなくなって、もう片方の内容だけが残るんだよ。",
     choices: [
       "正しい",
-      "マージは片方のブランチに加えられた変更を取り込んで統合する操作であり、統合元のブランチの変更内容が消えるわけではない",
-      "マージすると2つのブランチのコミット履歴が両方とも完全に削除され、真っさらな状態から始まる",
-      "マージはブランチ同士の内容を比較するだけで、実際にはファイルは一切変更されない",
+      "マージは一方の変更をもう一方へ取り込んで統合する操作で、変更は消えない",
+      "マージは両方のブランチの履歴を消し、統合した後の状態だけを新しく残す",
+      "マージは2つのブランチの差を表示するだけで、ファイルは変わらない",
     ],
-    correctChoice:
-      "マージは片方のブランチに加えられた変更を取り込んで統合する操作であり、統合元のブランチの変更内容が消えるわけではない",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "マージ（merge）は、あるブランチに加えられた変更を別のブランチに取り込んで一つに統合する操作です。統合される側のブランチが持っていた変更内容は消えるのではなく、マージ先のブランチに反映されます。マージ元のブランチ自体もGit上に残り続け、別途削除しない限りなくなりません。ファイルが変更されないという説明も誤りで、実際には差分を反映した新しいコミットが作られます。競合（コンフリクト）が起きた場合は手動で解消が必要になる点も初心者がつまずきやすいポイントです。",
+    source: src(S.conflicts),
     successLine: "ふん、今のはノーカンな。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
-    reviewExplanation:
-      "マージ（merge）は、あるブランチに加えられた変更を別のブランチに取り込んで一つに統合する操作です。統合される側のブランチが持っていた変更内容は消えるのではなく、マージ先のブランチに反映されます。マージ元のブランチ自体もGit上に残り続け、別途削除しない限りなくなりません。ファイルが変更されないという説明も誤りで、実際には差分を反映した新しいコミットが作られます。競合（コンフリクト）が起きた場合は手動で解消が必要になる点も初心者がつまずきやすいポイントです。",
-    sourceMemo: "GitHub Docs: About merge conflicts / Merging a pull request",
   },
   {
     id: "gh-013",
-    storeId: "github",
     topic: "issue",
     difficulty: "easy",
-    rivalLine:
-      "Issueは、バグ報告や機能要望、やるべきタスクなどを記録して管理するための機能だよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "Issueは、バグ報告や機能要望、やるべきタスクなどを記録して管理するための機能だよ。",
     choices: [
       "コードそのものを保存する場所で、ファイルの一種として扱われる",
       "正しい",
       "GitHub Actionsが自動生成するエラーログのことである",
       "有料プランの契約者しか作成できない機能である",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 1,
+    explain:
+      "この発言は正しいです。IssueはGitHub上でバグ報告、機能要望、TODOタスクなどを1件ずつチケットのように登録し、コメントやラベル、担当者付けをしながら管理できる機能です。コードファイルそのものではなく、あくまで議論・管理用の記録です。誰でも（権限があれば）自由に作成でき、無料プランでも制限なく使えます。",
+    source: src(S.issues),
     successLine: "は？　偶然だし。",
     failureLine: "これだから初心者は。",
-    reviewExplanation:
-      "この発言は正しいです。IssueはGitHub上でバグ報告、機能要望、TODOタスクなどを1件ずつチケットのように登録し、コメントやラベル、担当者付けをしながら管理できる機能です。コードファイルそのものではなく、あくまで議論・管理用の記録です。誰でも（権限があれば）自由に作成でき、無料プランでも制限なく使えます。",
-    sourceMemo: "GitHub Docs: About issues",
   },
   {
     id: "gh-014",
-    storeId: "github",
     topic: "pull request",
     difficulty: "normal",
-    rivalLine:
-      "プルリクエストを出したら、その時点で自動的にmainブランチにマージされるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "プルリクエストを出したら、その時点で自動的にmainブランチにマージされるんだよ。",
     choices: [
       "正しい",
-      "プルリクエストは変更内容をレビューしてもらうための提案であり、レビューを経て誰かが明示的にマージ操作をするまでは取り込まれない",
-      "プルリクエストを出すと、レビューの有無に関係なく24時間後に自動でマージされる",
-      "プルリクエストはコードを削除する操作であり、マージとは正反対の意味を持つ",
+      "PRはレビューがなくても、24時間たつと自動でmainにマージされる",
+      "PRを出した時点でmainに入り、問題があればレビューで取り消す仕組み",
+      "PRは変更を取り込んでほしいという提案で、誰かがマージするまで入らない",
     ],
-    correctChoice:
-      "プルリクエストは変更内容をレビューしてもらうための提案であり、レビューを経て誰かが明示的にマージ操作をするまでは取り込まれない",
-    isRivalCorrect: false,
+    answer: 3,
+    explain:
+      "プルリクエスト（PR）は、あるブランチの変更内容を別のブランチに取り込んでほしいという「提案」であり、出した時点では自動的にマージされません。レビュー担当者がコードを確認し、必要なら修正を経てから、誰かが明示的にマージボタンを押す（またはマージ操作を行う）ことで初めて取り込まれます。自動マージの設定を有効にしているリポジトリもありますが、それはあくまでオプション機能であり、標準の挙動ではありません。",
+    source: src(S.prs),
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
-    reviewExplanation:
-      "プルリクエスト（PR）は、あるブランチの変更内容を別のブランチに取り込んでほしいという「提案」であり、出した時点では自動的にマージされません。レビュー担当者がコードを確認し、必要なら修正を経てから、誰かが明示的にマージボタンを押す（またはマージ操作を行う）ことで初めて取り込まれます。自動マージの設定を有効にしているリポジトリもありますが、それはあくまでオプション機能であり、標準の挙動ではありません。",
-    sourceMemo: "GitHub Docs: About pull requests / Merging a pull request",
   },
   {
     id: "gh-015",
-    storeId: "github",
     topic: "pull request",
     difficulty: "hard",
-    rivalLine:
-      "プルリクエストを経由するのは技術的に必須のルールで、mainブランチに直接pushすることはGitHub上そもそも不可能なんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "プルリクエストを経由するのは技術的に必須のルールで、mainブランチに直接pushすることはGitHub上そもそも不可能なんだよ。",
     choices: [
       "正しい",
-      "プルリクエストを使う運用は多くのチームで採用される慣習・設定であり、ブランチ保護ルールを設定していなければmainへの直接pushは技術的に可能である",
-      "mainブランチへの直接pushは無料プランでは可能だが、有料プランでは技術的に禁止される",
-      "プルリクエストを使わずにpushすると、GitHubがそのリポジトリを自動的に削除する",
+      "PR経由は運用ルールで、保護ルールを設定しなければmainへ直接pushできる",
+      "無料プランでは直接pushできるが、有料プランでは技術的に禁止される",
+      "直接pushはできるが、そのコミットはGitHubが自動でPRに作り替える",
     ],
-    correctChoice:
-      "プルリクエストを使う運用は多くのチームで採用される慣習・設定であり、ブランチ保護ルールを設定していなければmainへの直接pushは技術的に可能である",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "プルリクエストを経由してレビューしてから取り込む、という運用は多くのチームが品質担保のために採用している「習慣・チーム運用ルール」であり、Git・GitHubの技術的な制約でそうなっているわけではありません。ブランチ保護ルール（branch protection rules）を設定していないリポジトリでは、権限を持つ人がmainブランチへ直接pushすること自体は技術的に可能です。プランの有無で直接pushの可否が変わるわけでもなく、直接pushしたからといってリポジトリが削除されることもありません。",
+    source: src(S.protected),
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "整いすぎて脳みそ茹だったか？",
-    reviewExplanation:
-      "プルリクエストを経由してレビューしてから取り込む、という運用は多くのチームが品質担保のために採用している「習慣・チーム運用ルール」であり、Git・GitHubの技術的な制約でそうなっているわけではありません。ブランチ保護ルール（branch protection rules）を設定していないリポジトリでは、権限を持つ人がmainブランチへ直接pushすること自体は技術的に可能です。プランの有無で直接pushの可否が変わるわけでもなく、直接pushしたからといってリポジトリが削除されることもありません。",
-    sourceMemo: "GitHub Docs: About protected branches",
   },
   {
     id: "gh-016",
-    storeId: "github",
     topic: "GitHub Pages",
     difficulty: "normal",
-    rivalLine:
-      "GitHub Pagesを使えば、どんなプログラミング言語で書かれたサーバーサイドのプログラムでも動かせるすごい機能だよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHub Pagesを使えば、どんなプログラミング言語で書かれたサーバーサイドのプログラムでも動かせるすごい機能だよ。",
     choices: [
       "正しい",
-      "GitHub PagesはHTML・CSS・JavaScriptなどの静的なファイルを公開するための仕組みであり、サーバー上で任意言語のプログラムを実行する機能ではない",
-      "GitHub Pagesは動画配信専用のサービスで、Webサイトの公開には使えない",
-      "GitHub Pagesは公開できるファイル数に上限がなく、あらゆる種類のサーバーアプリを無制限にホスティングできる",
+      "サーバー処理は動くが、使える言語はRubyとJavaScriptの2つに限られる",
+      "Pagesが配るのはHTML・CSS・JSなどの静的ファイルで、サーバー処理は動かない",
+      "サーバー処理を動かせるのは有料プランだけで、無料では静的ページのみ",
     ],
-    correctChoice:
-      "GitHub PagesはHTML・CSS・JavaScriptなどの静的なファイルを公開するための仕組みであり、サーバー上で任意言語のプログラムを実行する機能ではない",
-    isRivalCorrect: false,
+    answer: 2,
+    explain:
+      "GitHub Pagesは、リポジトリ内のHTML・CSS・JavaScriptなどの静的ファイルをWebサイトとして公開するための機能です。ブラウザ側で動くJavaScriptは実行できますが、サーバー側で任意のプログラミング言語のコードを常駐実行するような、いわゆるサーバーサイド処理の機能は提供していません。特定の言語だけ動く、有料プランなら動く、という話でもなく、サーバー処理を動かさないのは静的サイトホスティングというGitHub Pagesの性質そのものです。",
+    source: src(S.pages),
     successLine: "次はねえぞ、覚えとけよ。",
     failureLine: "ロウリュ効きすぎたんじゃねえの。",
-    reviewExplanation:
-      "GitHub Pagesは、リポジトリ内のHTML・CSS・JavaScriptなどの静的ファイルをWebサイトとして公開するための機能です。ブラウザ側で動くJavaScriptは実行できますが、サーバー側で任意のプログラミング言語のコードを常駐実行するような、いわゆるサーバーサイド処理の機能は提供していません。動画配信専用という説明も誤りですし、無制限にどんなサーバーアプリでも動かせるという説明も、静的サイトホスティングというGitHub Pagesの性質に反します。",
-    sourceMemo: "GitHub Docs: About GitHub Pages",
   },
   {
     id: "gh-017",
-    storeId: "github",
     topic: "GitHub Pages",
     difficulty: "easy",
-    rivalLine:
-      "GitHub Pagesを使うと、リポジトリの中身を無料で公開のWebサイトとして公開できるよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHub Pagesを使うと、リポジトリの中身を無料で公開のWebサイトとして公開できるよ。",
     choices: [
-      "有料プラン契約者のみが使える機能である",
       "正しい",
-      "リポジトリを非公開（プライベート）にしないと利用できなくなる",
-      "公開から24時間後に自動的に非公開になる",
+      "リポジトリを非公開（プライベート）にしないと利用できない",
+      "PHPなどのサーバー側プログラムも動くので、Webアプリを丸ごと置ける",
+      "独自ドメインは使えず、必ずgithub.ioのアドレスで公開される",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 0,
+    explain:
+      "この発言は正しいです。GitHub Pagesは無料アカウントでも使える機能で、リポジトリ内の静的ファイルを指定するだけで、誰でもアクセスできる公開Webサイトとして配信できます。ただし正確には、無料プランでPagesを使えるのは公開（パブリック）リポジトリのみで、プライベートリポジトリでPagesを使うにはProなどの有料プランが必要です。むしろ公開サイトとして機能させることが目的なので、プライベートにしないと使えないという説明は実態と逆です。公開できるのはHTML・CSS・JavaScriptなどの静的なファイルで、PHPのようなサーバー側のプログラムは動きません。独自ドメインを設定することもできます。",
+    source: src(S.pages),
     successLine: "へえ、やるじゃん……くやしいけど。",
     failureLine: "甘い甘い、100度じゃ足りねえな。",
-    reviewExplanation:
-      "この発言は正しいです。GitHub Pagesは無料アカウントでも使える機能で、リポジトリ内の静的ファイルを指定するだけで、誰でもアクセスできる公開Webサイトとして配信できます。ただし正確には、無料プランでPagesを使えるのは公開（パブリック）リポジトリのみで、プライベートリポジトリでPagesを使うにはProなどの有料プランが必要です。むしろ公開サイトとして機能させることが目的なので、プライベートにしないと使えないという説明は実態と逆です。公開が自動で止まるといった時間制限もありません。",
-    sourceMemo: "GitHub Docs: About GitHub Pages",
   },
   {
     id: "gh-018",
-    storeId: "github",
     topic: "deploy（デプロイ）",
     difficulty: "normal",
-    rivalLine:
-      "GitHubにpushした瞬間、世界中のユーザーが使ってる本番環境にもそのまま自動的に反映されるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubにpushした瞬間、世界中のユーザーが使ってる本番環境にもそのまま自動的に反映されるんだよ。",
     choices: [
       "正しい",
-      "pushはリポジトリの内容を更新するだけの操作であり、本番環境への反映（デプロイ）にはデプロイ用の仕組みを別途設定・実行する必要がある",
-      "pushすると本番環境だけでなく、他人のリポジトリにも自動的にコードがコピーされる",
-      "本番環境への反映は、GitHubの有料プランに加入していれば自動的に行われる",
+      "pushはリポジトリを更新するだけで、本番への反映にはデプロイの仕組みが別に要る",
+      "有料プランならpushと同時に本番へ反映されるが、無料プランでは手動での作業になる",
+      "pushで本番に反映されるのはmainだけで、他のブランチは反映されない",
     ],
-    correctChoice:
-      "pushはリポジトリの内容を更新するだけの操作であり、本番環境への反映（デプロイ）にはデプロイ用の仕組みを別途設定・実行する必要がある",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "pushはあくまでGitHub上のリポジトリの内容を更新するだけの操作で、それだけでは本番環境（実際にユーザーが使うサーバー）には何も起きません。本番環境に反映させる（デプロイする）には、GitHub ActionsなどのCI/CDパイプラインや、Vercel・Netlifyのような外部サービスとの連携を別途設定しておく必要があります。プラン課金によって自動デプロイが有効になるという事実もなく、これは設定次第の話です。",
+    source: src(S.cd),
     successLine: "ふん、今のはノーカンな。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
-    reviewExplanation:
-      "pushはあくまでGitHub上のリポジトリの内容を更新するだけの操作で、それだけでは本番環境（実際にユーザーが使うサーバー）には何も起きません。本番環境に反映させる（デプロイする）には、GitHub ActionsなどのCI/CDパイプラインや、Vercel・Netlifyのような外部サービスとの連携を別途設定しておく必要があります。プラン課金によって自動デプロイが有効になるという事実もなく、これは設定次第の話です。",
-    sourceMemo: "GitHub Docs: About continuous deployment（一般的なデプロイの考え方）",
   },
   {
     id: "gh-019",
-    storeId: "github",
     topic: "GitHub Actions",
     difficulty: "hard",
-    rivalLine:
-      "GitHub Actionsは、GitHub社の社員がリポジトリを人力でチェックしてくれる有人レビューサービスだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHub Actionsは、GitHub社の社員がリポジトリを人力でチェックしてくれる有人レビューサービスだよ。",
     choices: [
       "正しい",
-      "GitHub ActionsはYAML形式のワークフローに従い、イベントをきっかけに自動でテストやビルドなどを実行する仕組みであり、人による手動レビューではない",
-      "GitHub ActionsはIssueに書き込まれた内容をもとに、自動でコードを執筆してくれる機能である",
-      "GitHub Actionsはリポジトリの脆弱性を発見すると、自動的にリポジトリを非公開にする機能である",
+      "Actionsは人ではなくAIがコードをレビューし、合否をコメントしてくれる機能",
+      "Actionsはイベントをきっかけに、ワークフローに書いた処理を自動で実行する仕組み",
+      "Actionsは人手のレビューだが、担当するのは社員ではなく外部の協力者",
     ],
-    correctChoice:
-      "GitHub ActionsはYAML形式のワークフローに従い、イベントをきっかけに自動でテストやビルドなどを実行する仕組みであり、人による手動レビューではない",
-    isRivalCorrect: false,
+    answer: 2,
+    explain:
+      "GitHub Actionsは、リポジトリ内に置いたYAML形式の設定ファイルでワークフローを定義し、push・プルリクエスト作成などのイベントをトリガーに、テストの実行やビルド、デプロイなどを自動化する仕組みです。GitHub社の社員が手動でチェックしているわけではなく、あくまでサーバー上で自動実行されるプログラムです。AIがレビューして合否を付ける機能でもなく、何を実行するかはワークフローに書いた内容で決まります。",
+    source: src(S.actions),
     successLine: "……チッ。まぐれだろ。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
-    reviewExplanation:
-      "GitHub Actionsは、リポジトリ内に置いたYAML形式の設定ファイルでワークフローを定義し、push・プルリクエスト作成などのイベントをトリガーに、テストの実行やビルド、デプロイなどを自動化する仕組みです。GitHub社の社員が手動でチェックしているわけではなく、あくまでサーバー上で自動実行されるプログラムです。コードを自動執筆する機能でもなければ、脆弱性発見時に自動でリポジトリを非公開化するような機能でもありません。",
-    sourceMemo: "GitHub Docs: Understanding GitHub Actions",
   },
   {
     id: "gh-020",
-    storeId: "github",
     topic: "GitHub Actions",
     difficulty: "normal",
-    rivalLine:
-      "GitHub Actionsを使うと、pushやプルリクエストの作成をきっかけに、テストやビルドなどを自動で実行できるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHub Actionsを使うと、pushやプルリクエストの作成をきっかけに、テストやビルドなどを自動で実行できるんだよ。",
     choices: [
       "GitHub ActionsはIssueが作成された時にしか実行できない",
       "正しい",
       "GitHub Actionsを使うには、対象のリポジトリを有料プランに変更しなければならない",
       "GitHub Actionsで実行できるのはテストのみで、ビルドやデプロイには使えない",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 1,
+    explain:
+      "この発言は正しいです。GitHub Actionsは、push、プルリクエストの作成・更新、スケジュール実行など、さまざまなイベントをトリガーにワークフローを自動実行できる仕組みです。テストの自動実行だけでなく、ビルドやデプロイまで含めた一連の作業を自動化することもできます。パブリックリポジトリであれば無料プランでも一定の範囲で利用可能で、Issue作成時にしか動かないという制限もありません。",
+    source: src(S.actions, S.events),
     successLine: "あーもう、サウナ入り直すわ。",
     failureLine: "これだから初心者は。",
-    reviewExplanation:
-      "この発言は正しいです。GitHub Actionsは、push、プルリクエストの作成・更新、スケジュール実行など、さまざまなイベントをトリガーにワークフローを自動実行できる仕組みです。テストの自動実行だけでなく、ビルドやデプロイまで含めた一連の作業を自動化することもできます。パブリックリポジトリであれば無料プランでも一定の範囲で利用可能で、Issue作成時にしか動かないという制限もありません。",
-    sourceMemo: "GitHub Docs: Understanding GitHub Actions / Events that trigger workflows",
   },
   {
     id: "gh-021",
-    storeId: "github",
     topic: ".gitignore",
     difficulty: "easy",
-    rivalLine:
-      "`.gitignore`に書いておけば、すでにGitで管理されている（コミット済みの）ファイルも自動的に無視されるようになるよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "`.gitignore`に書いておけば、すでにGitで管理されている（コミット済みの）ファイルも自動的に無視されるようになるよ。",
     choices: [
       "正しい",
-      "`.gitignore`はまだ一度も追跡されていない（untrackedな）ファイルにしか効果がなく、すでに追跡・コミット済みのファイルには効果がない",
-      "`.gitignore`に書いたファイルは、パソコンから物理的に削除される",
-      "`.gitignore`はリポジトリ全体を非公開にする設定ファイルである",
+      ".gitignoreが効くのはまだ追跡していないファイルだけで、追跡済みには効かない",
+      ".gitignoreに書くと追跡済みのファイルは消えるので、先にバックアップが要る",
+      ".gitignoreは次のpushから効くので、コミット済みのファイルも送られなくなる",
     ],
-    correctChoice:
-      "`.gitignore`はまだ一度も追跡されていない（untrackedな）ファイルにしか効果がなく、すでに追跡・コミット済みのファイルには効果がない",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "`.gitignore`は、まだGitに一度も追跡されていない（untrackedな）ファイルやフォルダを「コミット対象から除外する」ための設定です。すでにコミット済みで追跡されているファイルに後から書き加えても、そのファイル自体の追跡は自動的には止まりません。追跡から外すには`git rm --cached`のようなコマンドで明示的に外す作業が必要です。`.gitignore`に書いても追跡済みのファイルが消えることはなく、次のpushから送られなくなるわけでもありません。",
+    source: src(S.gitignore),
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
-    reviewExplanation:
-      "`.gitignore`は、まだGitに一度も追跡されていない（untrackedな）ファイルやフォルダを「コミット対象から除外する」ための設定です。すでにコミット済みで追跡されているファイルに後から書き加えても、そのファイル自体の追跡は自動的には止まりません。追跡から外すには`git rm --cached`のようなコマンドで明示的に外す作業が必要です。`.gitignore`はファイルを物理削除したり、リポジトリ全体の公開範囲を変えたりする設定でもありません。",
-    sourceMemo: "Git公式ドキュメント: gitignore",
   },
   {
     id: "gh-022",
-    storeId: "github",
     topic: ".envと秘密情報の管理",
     difficulty: "normal",
-    rivalLine:
-      "うっかりAPIキーを`.env`ファイルごとpushしちゃっても、後で気づいてリポジトリから削除すればもう漏洩の心配はないよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "うっかりAPIキーを`.env`ファイルごとpushしちゃっても、後で気づいてリポジトリから削除すればもう漏洩の心配はないよ。",
     choices: [
       "正しい",
-      "一度pushしたAPIキーはコミット履歴に残り続け、既に見られたり取得されたりしている可能性があるため、ファイルを削除するだけでは不十分でキー自体を無効化・再発行（ローテーション）する必要がある",
-      "GitHubは機密情報が含まれるpushを検知すると、自動的にそのファイルだけを完全にすべての履歴から消してくれる",
-      "APIキーをpushしても、リポジトリを削除しない限り誰にも影響はない",
+      "GitHubが漏れたキーを見つけると、すべての履歴から自動で消してくれる",
+      "履歴に残り、すでに読まれた恐れもあるので、キー自体を無効化して再発行する",
+      "ファイルを消した次のコミットで履歴も上書きされるので、削除だけで足りる",
     ],
-    correctChoice:
-      "一度pushしたAPIキーはコミット履歴に残り続け、既に見られたり取得されたりしている可能性があるため、ファイルを削除するだけでは不十分でキー自体を無効化・再発行（ローテーション）する必要がある",
-    isRivalCorrect: false,
+    answer: 2,
+    explain:
+      "一度GitHubにpushされたAPIキーは、後からファイルを削除する新しいコミットを作っても、それより前のコミット履歴には残ったままです。パブリックリポジトリであれば誰かに閲覧・取得された可能性もありますし、ボットが常時スキャンして漏洩したキーを収集しているとも言われています。したがって最も安全な対応は、ファイルを消すことではなく、そのキー自体を無効化して新しいキーに再発行（ローテーション）することです。GitHubには機密情報のpushを検知する仕組み（シークレットスキャン等）はありますが、履歴を自動的に完全消去してくれるわけではありません。",
+    source: src(S.sensitive, S.scanning),
     successLine: "ふん、今のはノーカンな。",
     failureLine: "整いすぎて脳みそ茹だったか？",
-    reviewExplanation:
-      "一度GitHubにpushされたAPIキーは、後からファイルを削除する新しいコミットを作っても、それより前のコミット履歴には残ったままです。パブリックリポジトリであれば誰かに閲覧・取得された可能性もありますし、ボットが常時スキャンして漏洩したキーを収集しているとも言われています。したがって最も安全な対応は、ファイルを消すことではなく、そのキー自体を無効化して新しいキーに再発行（ローテーション）することです。GitHubには機密情報のpushを検知する仕組み（シークレットスキャン等）はありますが、履歴を自動的に完全消去してくれるわけではありません。",
-    sourceMemo:
-      "GitHub Docs: Removing sensitive data from a repository / About secret scanning",
   },
   {
     id: "gh-023",
-    storeId: "github",
     topic: ".envと秘密情報の管理",
     difficulty: "hard",
-    rivalLine:
-      "一度GitHubにpushしちゃったAPIキーは、たとえその後すぐにファイルを削除しても、漏洩したものとして扱ってキー自体を再発行（ローテーション）するべきだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "一度GitHubにpushしちゃったAPIキーは、たとえその後すぐにファイルを削除しても、漏洩したものとして扱ってキー自体を再発行（ローテーション）するべきだよ。",
     choices: [
       "正しい",
       "ファイルさえ削除すれば履歴からも自動的に消えるので、キーの再発行までは不要である",
       "プライベートリポジトリであれば、削除さえすればキーの再発行は不要である",
       "GitHubにpushした情報は非公開設定にしている限り、外部からは絶対に閲覧不可能である",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 0,
+    explain:
+      "この発言は正しいです。Gitではコミット履歴が過去の状態も含めて残り続けるため、後からファイルを1つ削除するコミットを積んでも、それより前のコミットを遡れば元のAPIキーの値を見ることができてしまいます。クローンやフォーク、キャッシュなどを通じて既に第三者の手に渡っている可能性もゼロではないため、実務上は「見られた前提」で対応するのが安全です。プライベートリポジトリであっても、共同作業者の存在や設定変更のリスクがあるため、同様にローテーションが推奨されます。",
+    source: src(S.sensitive),
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
-    reviewExplanation:
-      "この発言は正しいです。Gitではコミット履歴が過去の状態も含めて残り続けるため、後からファイルを1つ削除するコミットを積んでも、それより前のコミットを遡れば元のAPIキーの値を見ることができてしまいます。クローンやフォーク、キャッシュなどを通じて既に第三者の手に渡っている可能性もゼロではないため、実務上は「見られた前提」で対応するのが安全です。プライベートリポジトリであっても、共同作業者の存在や設定変更のリスクがあるため、同様にローテーションが推奨されます。",
-    sourceMemo:
-      "GitHub Docs: Removing sensitive data from a repository（漏洩時のベストプラクティス）",
   },
   {
     id: "gh-024",
-    storeId: "github",
     topic: ".envと秘密情報の管理",
     difficulty: "normal",
-    rivalLine:
-      "プライベートリポジトリになら`.env`ファイルをそのままコミットしても、他人に見られる心配は全くないから安心だよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "プライベートリポジトリになら`.env`ファイルをそのままコミットしても、他人に見られる心配は全くないから安心だよ。",
     choices: [
       "正しい",
-      "プライベートリポジトリでも共同作業者の追加、設定変更による公開、フォーク・クローンの持ち出しなどで秘密情報が広がるリスクは残るため、秘密情報はそもそもコミットしないのが基本",
-      "プライベートリポジトリは暗号化されているため、`.env`の中身をコミットしても技術的に読み取り不可能になる",
-      "プライベートリポジトリに置いたファイルは、GitHub社の従業員であっても閲覧できない",
+      "非公開でも共同作業者や公開設定の変更などで広がりうるので、秘密はコミットしない",
+      "非公開リポジトリは中身が暗号化されるので、.envを入れても読めなくなる",
+      "非公開にすれば、あとで公開に切り替えても過去のコミットは見えない",
     ],
-    correctChoice:
-      "プライベートリポジトリでも共同作業者の追加、設定変更による公開、フォーク・クローンの持ち出しなどで秘密情報が広がるリスクは残るため、秘密情報はそもそもコミットしないのが基本",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "プライベートリポジトリは第三者から見えにくくはなりますが、絶対安全というわけではありません。共同作業者を追加した場合、その人にも中身が見えますし、うっかり公開設定に変更してしまう事故や、誰かがクローンしたコピーを別の場所に持ち出すことも起こり得ます。そのため業界的なベストプラクティスは「プライベートかどうかにかかわらず秘密情報はそもそもコミットしない」ことであり、`.env`などは`.gitignore`で除外し、環境変数やシークレット管理サービスで管理するのが基本です。リポジトリ自体が自動暗号化されて中身が読めなくなるという仕様もありません。",
+    source: src(S.visibility),
     successLine: "次はねえぞ、覚えとけよ。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
-    reviewExplanation:
-      "プライベートリポジトリは第三者から見えにくくはなりますが、絶対安全というわけではありません。共同作業者を追加した場合、その人にも中身が見えますし、うっかり公開設定に変更してしまう事故や、誰かがクローンしたコピーを別の場所に持ち出すことも起こり得ます。そのため業界的なベストプラクティスは「プライベートかどうかにかかわらず秘密情報はそもそもコミットしない」ことであり、`.env`などは`.gitignore`で除外し、環境変数やシークレット管理サービスで管理するのが基本です。リポジトリ自体が自動暗号化されて中身が読めなくなるという仕様もありません。",
-    sourceMemo: "GitHub Docs: About repository visibility / セキュリティのベストプラクティス",
   },
   {
     id: "gh-025",
-    storeId: "github",
     topic: "「GitHubに置いてある＝動く完成品」ではない",
     difficulty: "normal",
-    rivalLine:
-      "GitHubにソースコードが上がっていれば、それはもうちゃんと動作する完成品だと考えていいよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubにソースコードが上がっていれば、それはもうちゃんと動作する完成品だと考えていいよ。",
     choices: [
       "正しい",
-      "GitHubにコードが公開されていることと、それが実際に動作する完成したソフトウェアであることは別問題で、開発途中・依存関係未整備・バグありのコードも大量に公開されている",
-      "GitHubはコードをアップロードする際に必ず動作確認を行い、動かないコードは公開を拒否する仕組みになっている",
-      "GitHubに公開されているコードは、すべてGitHub社の審査担当者によって動作テスト済みである",
+      "GitHubはアップロード時に動作確認をし、動かないコードは公開を拒否する",
+      "公開されていることと動く完成品であることは別で、開発途中やバグ入りも多い",
+      "スターが10以上ついたリポジトリは、GitHubが動作を保証している",
     ],
-    correctChoice:
-      "GitHubにコードが公開されていることと、それが実際に動作する完成したソフトウェアであることは別問題で、開発途中・依存関係未整備・バグありのコードも大量に公開されている",
-    isRivalCorrect: false,
+    answer: 2,
+    explain:
+      "GitHubは誰でも自由にコードを公開できる場所であり、公開されているというだけではそのコードが完成しているとも、正しく動作するとも限りません。作りかけのまま放置されたプロジェクト、必要なライブラリのインストール手順が書かれていないプロジェクト、特定の環境でしか動かないプロジェクトなどが大量に存在します。GitHubがアップロード時に動作確認や審査を行う仕組みは存在せず、実際に動くかどうかを確かめるには自分で環境を整えて実行してみる必要があります。",
+    source: src(S.repos),
     successLine: "……チッ。まぐれだろ。",
     failureLine: "だから言ったろ、俺は詳しいんだって。",
-    reviewExplanation:
-      "GitHubは誰でも自由にコードを公開できる場所であり、公開されているというだけではそのコードが完成しているとも、正しく動作するとも限りません。作りかけのまま放置されたプロジェクト、必要なライブラリのインストール手順が書かれていないプロジェクト、特定の環境でしか動かないプロジェクトなどが大量に存在します。GitHubがアップロード時に動作確認や審査を行う仕組みは存在せず、実際に動くかどうかを確かめるには自分で環境を整えて実行してみる必要があります。",
-    sourceMemo: "GitHub Docs: About repositories（公開の仕組みに関する一般的理解）",
   },
   {
     id: "gh-026",
-    storeId: "github",
     topic: "差分確認（diff）",
     difficulty: "normal",
-    rivalLine:
-      "GitHubの差分（diff）画面って、緑色の行が削除された行で、赤色の行が新しく追加された行を表してるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubの差分（diff）画面って、緑色の行が削除された行で、赤色の行が新しく追加された行を表してるんだよ。",
     choices: [
       "正しい",
-      "GitHubのdiff表示では、緑色が追加された行、赤色が削除された行を表しており、発言の色の割り当てが逆になっている",
-      "GitHubのdiff表示には色分けの機能自体がなく、変更箇所はすべて同じ色で表示される",
-      "GitHubのdiff表示の色は、変更した人のGitHubアイコンの色によって決まる",
+      "緑も赤も「変更された行」という意味で、追加と削除の区別は表示されない",
+      "色は見る人の設定で決まり、既定では緑が削除・赤が追加になっている",
+      "緑が追加された行、赤が削除された行で、色の割り当てが逆になっている",
     ],
-    correctChoice:
-      "GitHubのdiff表示では、緑色が追加された行、赤色が削除された行を表しており、発言の色の割り当てが逆になっている",
-    isRivalCorrect: false,
+    answer: 3,
+    explain:
+      "GitHubのプルリクエストやコミットのdiff（差分）表示では、一般的に緑色の背景が「追加された行」、赤色の背景が「削除された行」を表します。発言では色の意味が逆になっており、初心者が最初によく混同しやすいポイントです。diff表示には追加と削除を区別する色分けがあり、既定の配色では緑が追加、赤が削除です。差分を正しく読めるようになると、プルリクエストのレビューで「実際に何が変わったか」を素早く把握できるようになります。",
+    source: src(S.review),
     successLine: "ふん、今のはノーカンな。",
     failureLine: "甘い甘い、100度じゃ足りねえな。",
-    reviewExplanation:
-      "GitHubのプルリクエストやコミットのdiff（差分）表示では、一般的に緑色の背景が「追加された行」、赤色の背景が「削除された行」を表します。発言では色の意味が逆になっており、初心者が最初によく混同しやすいポイントです。diff表示には明確な色分け機能があり、色は編集者のアイコンとは無関係です。差分を正しく読めるようになると、プルリクエストのレビューで「実際に何が変わったか」を素早く把握できるようになります。",
-    sourceMemo: "GitHub Docs: Reviewing proposed changes in a pull request",
   },
   {
     id: "gh-027",
-    storeId: "github",
     topic: "コミット履歴",
     difficulty: "normal",
-    rivalLine:
-      "GitHubのコミット履歴は、新しくpushするたびにそれまでの履歴が消えて、直近のpush分だけに置き換わっていくんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "GitHubのコミット履歴は、新しくpushするたびにそれまでの履歴が消えて、直近のpush分だけに置き換わっていくんだよ。",
     choices: [
       "正しい",
-      "コミット履歴は基本的に積み上げ式であり、pushするたびに過去の履歴が消えるのではなく、新しいコミットが追加されて履歴が伸びていく",
-      "コミット履歴はGitHub上では見られず、ローカルのパソコンでしか確認できない",
-      "コミット履歴は直近5件までしか保存されない仕様になっている",
+      "履歴は積み上がっていき、pushのたびに新しいコミットが後ろに加わる",
+      "GitHubが保存するのは直近100件までで、古いコミットから順に消える",
+      "pushのたびに過去のコミットは1つにまとめられ、細かい履歴は消える",
     ],
-    correctChoice:
-      "コミット履歴は基本的に積み上げ式であり、pushするたびに過去の履歴が消えるのではなく、新しいコミットが追加されて履歴が伸びていく",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "Gitのコミット履歴は基本的に追記型で、pushするたびに新しいコミットが履歴の末尾に積み重なっていきます。特別な操作（force pushによる履歴の書き換えなど）をしない限り、過去のコミット履歴が勝手に消えることはありません。GitHub上のリポジトリページやコミット一覧からもすべての履歴を辿って確認できるため、件数に上限があるわけでも、pushのたびに過去のコミットが1つにまとめられるわけでもありません。",
+    source: src(S.gitlog),
     successLine: "へえ、やるじゃん……くやしいけど。",
     failureLine: "残念、サウナ室から出直してこい。",
-    reviewExplanation:
-      "Gitのコミット履歴は基本的に追記型で、pushするたびに新しいコミットが履歴の末尾に積み重なっていきます。特別な操作（force pushによる履歴の書き換えなど）をしない限り、過去のコミット履歴が勝手に消えることはありません。GitHub上のリポジトリページやコミット一覧からもすべての履歴を辿って確認できるため、ローカルでしか見られないという説明も、件数に上限があるという説明も誤りです。",
-    sourceMemo: "GitHub Docs: Viewing a repository's commit history",
   },
   {
     id: "gh-028",
-    storeId: "github",
     topic: "ローカルとリモートの違い",
     difficulty: "easy",
-    rivalLine:
-      "ローカルリポジトリは自分のパソコンの中にあるGit管理下のプロジェクトのことで、リモートリポジトリはGitHubなど別の場所に置かれているコピーのことだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "ローカルリポジトリは自分のパソコンの中にあるGit管理下のプロジェクトのことで、リモートリポジトリはGitHubなど別の場所に置かれているコピーのことだよ。",
     choices: [
       "ローカルとリモートは常に自動的に同じ内容に同期され続けており、区別する意味がない",
       "正しい",
       "リモートリポジトリという概念は存在せず、GitHub上のものもすべてローカルリポジトリと呼ぶ",
       "ローカルリポジトリはコミットができず、閲覧専用の存在である",
     ],
-    correctChoice: "正しい",
-    isRivalCorrect: true,
+    answer: 1,
+    explain:
+      "この発言は正しいです。ローカルリポジトリは自分のパソコン上にあるGit管理下のプロジェクトのコピーで、リモートリポジトリはGitHubなどのサーバー上に置かれた同じプロジェクトのコピーです。両者は自動的に常時同期されるわけではなく、pushやpullといった操作を通じて手動でタイミングを合わせて同期させる必要があります。ローカルリポジトリでも通常どおりコミットができるので、閲覧専用という説明も誤りです。",
+    source: src(S.remotes),
     successLine: "は？　偶然だし。",
     failureLine: "水風呂入って頭冷やしてこいよ。",
-    reviewExplanation:
-      "この発言は正しいです。ローカルリポジトリは自分のパソコン上にあるGit管理下のプロジェクトのコピーで、リモートリポジトリはGitHubなどのサーバー上に置かれた同じプロジェクトのコピーです。両者は自動的に常時同期されるわけではなく、pushやpullといった操作を通じて手動でタイミングを合わせて同期させる必要があります。ローカルリポジトリでも通常どおりコミットができるので、閲覧専用という説明も誤りです。",
-    sourceMemo: "GitHub Docs: About remote repositories",
   },
   {
     id: "gh-029",
-    storeId: "github",
     topic: "ローカルとリモートの違い",
     difficulty: "hard",
-    rivalLine:
-      "ローカルでコミットを取り消したり（revertやreset）しても、何もしなくてもリモートのGitHub上の履歴には自動的にその変更が反映されるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "ローカルでコミットを取り消したり（revertやreset）しても、何もしなくてもリモートのGitHub上の履歴には自動的にその変更が反映されるんだよ。",
     choices: [
       "正しい",
-      "ローカルでの取り消し操作はローカルリポジトリ内で完結しており、リモート側に反映するにはpush（場合によってはforce push）という明示的な操作が必要",
-      "ローカルでresetすると、GitHub側のリポジトリが自動的にロックされて誰も操作できなくなる",
-      "revertやresetはGitHub上のWeb画面でしか行えず、ローカルのパソコンでは行えない操作である",
+      "revertは自動で反映されるが、resetはGitHub上の画面でしか行えない",
+      "手元でresetするとリモートが自動でロックされ、誰も操作できなくなる",
+      "手元の取り消しは手元だけの変更で、リモートへ反映するにはpushが要る",
     ],
-    correctChoice:
-      "ローカルでの取り消し操作はローカルリポジトリ内で完結しており、リモート側に反映するにはpush（場合によってはforce push）という明示的な操作が必要",
-    isRivalCorrect: false,
+    answer: 3,
+    explain:
+      "revertやresetでローカルのコミット履歴を取り消したり書き換えたりしても、その変更はローカルリポジトリの中だけで完結しており、GitHub上のリモートリポジトリには自動的には反映されません。反映させるにはpush操作が必要で、特にresetのように過去の履歴そのものを書き換えた場合は、通常のpushでは拒否されるため、force push（強制push）という慎重に扱うべき操作が必要になることもあります。revertやresetはローカルのコマンドラインやGitクライアントで行う操作で、GitHubのWeb画面専用の機能ではありません。",
+    source: src(S.revert, S.reset),
     successLine: "……知ってて当然だろ、調子乗んな。",
     failureLine: "俺に勝つにはまだ10年早いわ。",
-    reviewExplanation:
-      "revertやresetでローカルのコミット履歴を取り消したり書き換えたりしても、その変更はローカルリポジトリの中だけで完結しており、GitHub上のリモートリポジトリには自動的には反映されません。反映させるにはpush操作が必要で、特にresetのように過去の履歴そのものを書き換えた場合は、通常のpushでは拒否されるため、force push（強制push）という慎重に扱うべき操作が必要になることもあります。revertやresetはローカルのコマンドラインやGitクライアントで行う操作で、GitHubのWeb画面専用の機能ではありません。",
-    sourceMemo: "Git公式ドキュメント: git-revert / git-reset",
   },
   {
     id: "gh-030",
-    storeId: "github",
     topic: "AIにGitHubリポジトリを読ませるときの注意",
     difficulty: "hard",
-    rivalLine:
-      "AIにGitHubのリポジトリを読み込ませて質問すれば、READMEに書いてある通りに実際のコードも完璧に動くかどうかまで保証してくれるんだよ。",
-    questionText: "この発言は正しいか？間違っている場合は、最も正確な理由を選べ。",
+    line: "AIにGitHubのリポジトリを読み込ませて質問すれば、READMEに書いてある通りに実際のコードも完璧に動くかどうかまで保証してくれるんだよ。",
     choices: [
       "正しい",
-      "AIはREADMEやコードの内容を要約・解釈する助けにはなるが、実際にコードを実行して動作を保証するものではなく、READMEと実装のズレやAI自身の誤読・誤解説の可能性も残る",
-      "AIにリポジトリを読ませると、AIが自動的に全てのバグを修正してからでないと回答してくれない",
-      "AIはGitHubの非公開リポジトリの内容であっても、常に無条件で正確に読み取れることが保証されている",
+      "AIは読解の助けにはなるが、実行して確かめるわけではなく誤読もありうる",
+      "AIは中でコードを実行して確かめるので、動かない部分があれば必ず指摘する",
+      "READMEと実装がずれている場合だけは、AIが自動で気づいて警告してくれる",
     ],
-    correctChoice:
-      "AIはREADMEやコードの内容を要約・解釈する助けにはなるが、実際にコードを実行して動作を保証するものではなく、READMEと実装のズレやAI自身の誤読・誤解説の可能性も残る",
-    isRivalCorrect: false,
+    answer: 1,
+    explain:
+      "AIはREADMEやコードを要約・解説する助けにはなりますが、読んだだけで実際にコードを動かして確かめているわけではありません。GitHub の公式文書も、Copilot Chat が生成する説明は正確・完全とは限らないのでレビューが必要だとしています。READMEと実装のズレや、AI自身の誤読もありえます。動くかどうかは、自分で実行して確かめるのが基本です。",
+    source: src(S.copilot),
     successLine: "うるさいな、次は負けねえから。",
     failureLine: "整いすぎて脳みそ茹だったか？",
-    reviewExplanation:
-      "AIにリポジトリの内容を読ませて説明してもらうことは、コードの概要をつかむ助けにはなりますが、それは「実際にプログラムを動かして正しく動作することを保証する」ものではありません。READMEの記述が古かったり実装と食い違っていたりするケースもありますし、AI自身がコードを誤って解釈したり、存在しない挙動をもっともらしく説明してしまう（ハルシネーション）可能性もあります。本当に動くかどうかを確認したい場合は、実際に環境を用意してコードを実行し、テストを走らせるといった検証が別途必要です。非公開リポジトリの扱いも、利用しているAIツールの権限設定次第であり、常に無条件で読めるわけでもありません。",
-    sourceMemo: "一般的なAIツール利用時の留意事項（README/コード解説の限界に関する知見）",
   },
-];
+]);

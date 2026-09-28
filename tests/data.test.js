@@ -123,3 +123,47 @@ for (const [poolId, pool] of Object.entries(questionPools)) {
     });
   });
 }
+
+/**
+ * 選択肢の長さで正解が見抜けないこと。
+ * ゴウが間違っている問題では、正解（どこが違うかの指摘）が一番長い文になりがち。
+ * 長い選択肢を選ぶだけで勝ててしまうと学習にならないので、店ごとに割合で縛る。
+ */
+const MAX_LONGEST_RATIO = 0.4; // 3つの指摘候補から偶然に最長になる割合（約1/3）に余裕を持たせた上限
+const MIN_DISTRACTOR_RATIO = 0.5; // 誤りの選択肢は正解の半分以上の長さ（短すぎる「捨て選択肢」を防ぐ）
+
+for (const [poolId, pool] of Object.entries(questionPools)) {
+  test(`[${poolId}] 選択肢の長さで正解が見抜けない`, () => {
+    const rivalWrong = pool.filter((q) => !q.isRivalCorrect);
+    let longest = 0;
+    let shortest = 0;
+    for (const q of rivalWrong) {
+      const correctLen = q.correctChoice.length;
+      const others = q.choices.filter((c) => c !== "正しい" && c !== q.correctChoice);
+      if (others.every((c) => c.length < correctLen)) longest += 1;
+      if (others.every((c) => c.length > correctLen)) shortest += 1;
+      for (const c of others) {
+        assert.ok(
+          c.length >= correctLen * MIN_DISTRACTOR_RATIO,
+          `${q.id}: 誤りの選択肢が短すぎる（${c.length}字 < 正解${correctLen}字の半分）「${c}」`,
+        );
+      }
+    }
+    const ratio = longest / rivalWrong.length;
+    assert.ok(
+      ratio <= MAX_LONGEST_RATIO,
+      `正解が一番長い問題が ${longest}/${rivalWrong.length} 問（${Math.round(ratio * 100)}%）。上限は ${MAX_LONGEST_RATIO * 100}%`,
+    );
+    // 逆に「一番短いのが正解」という癖も付けない
+    assert.ok(
+      shortest / rivalWrong.length <= MAX_LONGEST_RATIO,
+      `正解が一番短い問題が ${shortest}/${rivalWrong.length} 問。上限は ${MAX_LONGEST_RATIO * 100}%`,
+    );
+  });
+
+  test(`[${poolId}] 出典に公式ページの URL がある`, () => {
+    for (const q of pool) {
+      assert.match(q.sourceMemo, /https:\/\/\S+/, `${q.id}: 出典に https の URL が無い`);
+    }
+  });
+}
