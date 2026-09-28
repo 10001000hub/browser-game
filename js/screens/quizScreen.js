@@ -31,19 +31,19 @@ export function mount(root, context) {
 
   section.innerHTML = `
     <header class="quiz-header">
-      <span class="quiz-progress">${context.questionNumber} / ${context.totalQuestions}</span>
+      <span class="quiz-progress" aria-label="${context.totalQuestions}問中${context.questionNumber}問目">${context.questionNumber} / ${context.totalQuestions}</span>
     </header>
     <div class="sauna-bg sauna-bg--quiz" aria-hidden="true"></div>
     <div class="quiz-rival">
       <img class="quiz-rival__portrait" src="${CAST.rival.image}" alt="" aria-hidden="true">
       <div class="bubble bubble--rival">
         <span class="bubble__speaker">${escapeHtml(CAST.rival.name)}</span>
-        <p class="bubble__text">${escapeHtml(context.question.rivalLine)}</p>
+        <p class="bubble__text" data-autofocus>${escapeHtml(context.question.rivalLine)}</p>
       </div>
     </div>
     <p class="quiz-question">${escapeHtml(context.question.questionText)}</p>
-    <div class="choice-list"></div>
-    <div class="feedback-toast" aria-live="polite"></div>
+    <div class="choice-list" role="group" aria-label="答えを選ぶ（数字キー1〜4でも選べます）"></div>
+    <div class="feedback-toast" role="status" aria-live="polite"></div>
   `;
   root.appendChild(section);
 
@@ -54,11 +54,12 @@ export function mount(root, context) {
 
   function renderChoices() {
     choiceList.innerHTML = "";
-    context.choiceOrder.forEach((text) => {
+    context.choiceOrder.forEach((text, index) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "choice";
       btn.textContent = text;
+      btn.setAttribute("aria-keyshortcuts", String(index + 1));
       if (context.wrongChoices.has(text)) {
         btn.classList.add("is-incorrect");
         btn.disabled = true;
@@ -113,10 +114,24 @@ export function mount(root, context) {
     }
   }
 
+  // 数字キー 1〜4 で選択肢を押せるようにする（キーボードだけで遊べるように）
+  function onKeydown(event) {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    const index = Number(event.key) - 1;
+    if (!Number.isInteger(index) || index < 0) return;
+    const btn = choiceList.querySelectorAll(".choice")[index];
+    if (!btn || btn.disabled) return;
+    event.preventDefault();
+    btn.focus({ preventScroll: true });
+    btn.click();
+  }
+  document.addEventListener("keydown", onKeydown);
+
   renderChoices();
 
   return {
     unmount() {
+      document.removeEventListener("keydown", onKeydown);
       if (advanceTimer !== null) {
         window.clearTimeout(advanceTimer);
       }

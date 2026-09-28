@@ -1,0 +1,32 @@
+name: 問題の誤り・提案
+description: 問題や解説が公式ドキュメントと食い違っている、または新しい問題を提案したい
+labels: [content]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 種類
+      options:
+        - 既存の問題の誤り
+        - 新しい問題の提案
+    validations:
+      required: true
+  - type: input
+    id: question-id
+    attributes:
+      label: 問題の id（既存の問題の場合）
+      placeholder: "例: cx-005"
+  - type: textarea
+    id: detail
+    attributes:
+      label: 内容
+      description: 何がどう違うか、または提案する問題（ゴウのセリフ・正しい答え）
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: 根拠になる公式ドキュメントの URL
+      description: 個人のブログや AI の回答は根拠にできません
+    validations:
+      required: true

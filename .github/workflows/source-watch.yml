@@ -1,0 +1,59 @@
+name: source-watch
+
+# 問題の出典（公式ドキュメント）が開けるか・本文が変わっていないかを毎日調べる。
+# AI や有料 API は呼ばない。公式ページを GET するだけ。
+# 結果は "source-watch" ラベルの Issue 1件にまとめ、中身が変わったときだけ書き換える。
+
+on:
+  schedule:
+    - cron: "17 0 * * *" # 毎日 09:17 JST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: source-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 出典を点検する
+        id: check
+        run: |
+          set +e
+          node scripts/check-sources.mjs --report report.md
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: 追跡用の Issue を更新する
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODE: ${{ steps.check.outputs.code }}
+        run: |
+          set -euo pipefail
+          gh label create source-watch --color BFD4F2 --description "出典の点検（自動）" 2>/dev/null || true
+          number=$(gh issue list --label source-watch --state open --json number --jq '.[0].number // empty')
+          if [ "$CODE" = "0" ]; then
+            if [ -n "$number" ]; then
+              gh issue comment "$number" --body "出典はすべて開けて、本文の変化もなくなりました。閉じます。"
+              gh issue close "$number"
+            fi
+            exit 0
+          fi
+          digest=$(head -1 report.md)
+          if [ -z "$number" ]; then
+            gh issue create --title "出典の点検で確かめることがあります" --label source-watch --body-file report.md
+          elif [ "$(gh issue view "$number" --json body --jq '.body' | head -1)" != "$digest" ]; then
+            gh issue edit "$number" --body-file report.md
+            gh issue comment "$number" --body "点検の結果が変わりました。本文を更新しています。"
+          else
+            echo "前回と同じ結果なので Issue は触りません。"
+          fi

@@ -54,14 +54,17 @@ export function mount(root, context) {
         <img class="portrait portrait--hero ${isHero ? "is-active" : "is-dim"}" src="${CAST.hero.image}" alt="">
       </div>
       <button type="button" class="btn btn--ghost dialogue-skip">スキップ</button>
-      <div class="dialogue-box" role="button" tabindex="0" aria-label="タップして次へ">
+      <div class="dialogue-box" role="button" tabindex="0" aria-describedby="dialogue-next-hint" data-autofocus>
         ${isNarration ? "" : `<span class="dialogue-box__speaker ${speakerClass}">${speakerLabel}</span>`}
         <p class="dialogue-box__text ${isNarration ? "dialogue-box__text--narration" : ""}">${escapeHtml(textContent)}</p>
         <span class="dialogue-box__next" aria-hidden="true">▼</span>
+        <span id="dialogue-next-hint" class="visually-hidden">タップ、または Enter で次へ</span>
       </div>
     `;
 
     const box = section.querySelector(".dialogue-box");
+    // 次のセリフに進んでも、キーボードと読み上げの位置をセリフの枠に保つ
+    if (index > 0) box.focus({ preventScroll: true });
     // stopPropagation: goNext()が同期描画する次シーンはsectionにclickリスナーを張るため、
     // このクリックがバブリングで届くと reveal / battle-start が即スキップされてしまう
     const handleAdvance = (event) => {

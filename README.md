@@ -10,6 +10,11 @@
 
 ## [https://10001000hub.github.io/browser-game/](https://10001000hub.github.io/browser-game/)
 
+> **In English:** *Neppa Ronpa* is a free, build-free browser quiz game (Japanese UI) that teaches developers to spot
+> confident-but-wrong claims about AI coding tools — Codex, Claude Code, GitHub, WSL and more.
+> Every explanation cites official documentation, and a daily, LLM-free job checks those sources for broken links
+> and content changes so the questions stay accurate. See [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ---
 
 ## どんなゲーム？
@@ -22,7 +27,7 @@
 - **コンティニュー** … 力尽きても一度だけ、10カウント以内の連打で復活できる。
 - **整い場（振り返り）** … 決着後、出題された10問を解説と公式の出典つきで復習できる。ここが学習の本番。
 
-## 7つの店舗（全店オープン）
+## 8つの店舗（全店オープン）
 
 - 🌱 赤坂 GitHub 店 … GitとGitHubの基本（30問）
 - 🐋 銀座 Orca 店 … 複数のAIエージェントを並べて動かす開発環境 Orca（20問）
@@ -31,6 +36,7 @@
 - 🐧 渋谷 WSL 店 … WindowsでLinuxを使う（20問）
 - 🗂️ 神田 Obsidian 店 … ノートをつなぐメモアプリ（20問）
 - 🤖 虎ノ門 AIエージェント店 … AIに仕事を任せる設計（20問）
+- 🧰 池袋 Codex 店 … OpenAI のコーディングエージェント Codex（20問）
 
 1回のプレイでは、ゴウが正しいことを言う問題が3問、間違ったことを言う問題が7問出ます。
 
@@ -46,14 +52,17 @@
 
 ## 問題を追加する（コントリビュート）
 
-1. `js/data/questions-<店舗ID>.js` の配列の **末尾** に問題を足す。既存の `id` は変えない。
-2. 書き方は `defineQuestions()`（`js/data/defineQuestions.js`）の形に合わせる。
-3. `npm test` を実行し、すべて合格することを確かめる。
-4. プルリクエストの説明に、出典として使った公式ページのURLを書く。
+問題の誤りの指摘・新しい問題の提案・コードの改善を歓迎します。手順は [CONTRIBUTING.md](CONTRIBUTING.md) を見てください。
+AI エージェント（Codex など）で作業するときのルールは [AGENTS.md](AGENTS.md) にあります。
 
-新しい店舗を増やすときは、問題ファイルを作ったうえで、`js/data/stores.js` に店舗を、
+## 問題を新しく保つしくみ
 
-`js/data/questionPools.js` に問題の登録を、`js/data/introScripts.js` に店ごとのセリフを1つずつ足します。
+公式ドキュメントは変わります。問題が古くならないよう、次の2つが自動で回っています。どちらも AI や有料 API は呼びません。
+
+- プルリクエストのたびに、全店舗の問題の形・選択肢の長さの偏り・出典の控えの抜けをテストで検査する。
+- 毎日、全問題の出典ページを開き、リンク切れと本文の変化を調べる。変化があれば、確かめるべき問題の id を Issue にまとめる。
+
+Issue が立ったときの片付け方は [docs/MAINTENANCE.md](docs/MAINTENANCE.md) にあります。
 
 ## ローカルで動かす
 
@@ -90,7 +99,9 @@ js/
   screens/      画面ごとのUIモジュール（title / quiz / review など8画面）
 tests/          node --test 用のテスト一式
 assets/images/  キャラクターと背景（すべてこのリポジトリのオリジナルSVG）
-docs/           問題づくりのガイド
+scripts/        出典の点検（check-sources.mjs）
+data/           出典ページの控え（source-snapshots.json）
+docs/           問題づくりのガイド・保守の手順書
 ```
 
 ## ライセンス

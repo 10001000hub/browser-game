@@ -76,4 +76,13 @@ export const stores = [
     status: "available",
     questionPoolId: "ai-agent",
   },
+  {
+    id: "codex",
+    displayName: "池袋 Codex 店",
+    themeName: "Codex",
+    icon: "🧰",
+    description: "OpenAIのコーディングエージェント。権限・設定・自動化の作法。",
+    status: "available",
+    questionPoolId: "codex",
+  },
 ];

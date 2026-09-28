@@ -18,6 +18,7 @@ import { claudeCodeQuestions } from "./questions-claude-code.js";
 import { wslQuestions } from "./questions-wsl.js";
 import { obsidianQuestions } from "./questions-obsidian.js";
 import { aiAgentQuestions } from "./questions-ai-agent.js";
+import { codexQuestions } from "./questions-codex.js";
 
 export const questionPools = {
   github: githubQuestions,
@@ -27,4 +28,5 @@ export const questionPools = {
   wsl: wslQuestions,
   obsidian: obsidianQuestions,
   "ai-agent": aiAgentQuestions,
+  codex: codexQuestions,
 };
