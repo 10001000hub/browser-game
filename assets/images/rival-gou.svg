@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" role="img" aria-label="熱波師ゴウ">
+  <!-- オリジナルキャラクター「熱波師ゴウ」: 自称AI通の熱波師。作者: このリポジトリ（MIT） -->
+  <defs>
+    <linearGradient id="gskin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e3a476"/><stop offset="1" stop-color="#c98055"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2320"/><stop offset="1" stop-color="#141010"/>
+    </linearGradient>
+    <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb347"/><stop offset=".55" stop-color="#e2571e"/><stop offset="1" stop-color="#7a1f0c"/>
+    </linearGradient>
+    <linearGradient id="gtowel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#e0421b"/>
+    </linearGradient>
+  </defs>
+  <!-- 振り回すタオル -->
+  <path d="M332 70 C392 120 396 214 352 280 C372 210 360 150 316 104 Z" fill="url(#gtowel)" opacity=".95"/>
+  <path d="M338 96 C370 140 372 190 356 236" stroke="#ffd0a8" stroke-width="5" fill="none" opacity=".7"/>
+  <!-- 腕（タオルを掲げる） -->
+  <path d="M300 420 C330 360 344 250 330 118 L304 112 C300 230 286 330 256 400 Z" fill="url(#gskin)"/>
+  <circle cx="318" cy="112" r="24" fill="#d88e60"/>
+  <!-- 胴体（黒Tシャツ・ロゴなし） -->
+  <path d="M26 560 C30 440 90 384 200 378 C310 384 370 440 374 560 Z" fill="url(#shirt)"/>
+  <path d="M148 392 C170 412 230 412 252 392" stroke="#c98055" stroke-width="16" fill="none"/>
+  <path d="M120 470 C150 486 250 486 280 470" stroke="#3b312c" stroke-width="5" fill="none"/>
+  <!-- 炎の模様 -->
+  <path d="M170 540 C160 500 190 490 184 460 C206 480 214 500 204 520 C222 506 222 490 218 478 C240 500 242 530 230 552 Z" fill="#ff6b35" opacity=".85"/>
+  <!-- 首 -->
+  <path d="M160 320 L240 320 L246 392 C226 410 174 410 154 392 Z" fill="#c07650"/>
+  <!-- 顔（角ばった輪郭） -->
+  <path d="M116 190 C116 118 154 88 200 88 C246 88 284 118 284 190 L282 262 C278 312 246 344 200 344 C154 344 122 312 118 262 Z" fill="url(#gskin)"/>
+  <ellipse cx="114" cy="226" rx="15" ry="24" fill="#c98055"/>
+  <ellipse cx="286" cy="226" rx="15" ry="24" fill="#c98055"/>
+  <!-- 短髪 -->
+  <path d="M116 176 C112 106 156 70 200 70 C246 70 290 104 284 176 C270 150 250 138 200 136 C150 138 130 150 116 176 Z" fill="#1e1612"/>
+  <!-- ハチマキ -->
+  <path d="M112 166 C150 148 250 148 288 166 L286 196 C248 180 152 180 114 196 Z" fill="#f5f0e6"/>
+  <circle cx="200" cy="170" r="11" fill="#e0421b"/>
+  <path d="M110 176 C86 170 72 186 64 204 C84 196 96 196 112 190 Z" fill="#f5f0e6"/>
+  <path d="M112 186 C92 196 84 214 82 232 C98 216 108 210 116 200 Z" fill="#ebe3d3"/>
+  <!-- サングラス -->
+  <path d="M130 226 L190 222 L186 262 C170 272 142 270 134 258 Z" fill="url(#lens)" stroke="#1a1210" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M270 226 L210 222 L214 262 C230 272 258 270 266 258 Z" fill="url(#lens)" stroke="#1a1210" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M190 228 C196 224 204 224 210 228" stroke="#1a1210" stroke-width="6" fill="none"/>
+  <path d="M146 234 L164 232" stroke="#fff3dc" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+  <path d="M226 234 L244 232" stroke="#fff3dc" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+  <!-- 眉（サングラス上に片方だけ上がる） -->
+  <path d="M138 212 L184 206" stroke="#1e1612" stroke-width="8" stroke-linecap="round"/>
+  <path d="M216 204 L264 196" stroke="#1e1612" stroke-width="8" stroke-linecap="round"/>
+  <!-- 鼻 -->
+  <path d="M200 262 L192 290 L208 292" stroke="#a8603c" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ニヤリとした口 -->
+  <path d="M150 304 C176 330 238 326 258 294 C236 306 176 312 150 304 Z" fill="#fffaf2" stroke="#6b2a18" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M170 312 L172 320 M192 316 L193 324 M214 316 L214 324 M236 310 L234 318" stroke="#c9b9a6" stroke-width="3"/>
+  <!-- 無精ひげ -->
+  <g fill="#6b4a36" opacity=".45">
+    <circle cx="160" cy="330" r="2"/><circle cx="176" cy="338" r="2"/><circle cx="196" cy="342" r="2"/>
+    <circle cx="218" cy="340" r="2"/><circle cx="238" cy="332" r="2"/><circle cx="186" cy="332" r="2"/><circle cx="208" cy="334" r="2"/>
+  </g>
+  <!-- 湯気 -->
+  <path d="M60 110 C44 90 76 80 60 58" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity=".35"/>
+  <path d="M92 86 C78 68 106 58 92 38" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".28"/>
+</svg>

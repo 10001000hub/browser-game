@@ -15,7 +15,7 @@ const REQUIRED_STRING_FIELDS = [
   "storeId",
   "topic",
   "difficulty",
-  "fakeMasaoLine",
+  "rivalLine",
   "questionText",
   "correctChoice",
   "successLine",
@@ -103,11 +103,11 @@ for (const [poolId, pool] of Object.entries(questionPools)) {
       );
 
       assert.equal(
-        typeof q.isFakeMasaoCorrect,
+        typeof q.isRivalCorrect,
         "boolean",
-        `${where}: isFakeMasaoCorrect が真偽値でない`,
+        `${where}: isRivalCorrect が真偽値でない`,
       );
-      if (q.isFakeMasaoCorrect === true) {
+      if (q.isRivalCorrect === true) {
         assert.equal(
           q.correctChoice,
           "正しい",

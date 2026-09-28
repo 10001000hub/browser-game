@@ -1,10 +1,11 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
-import { playSfx, playVoice, preloadVoice, stopVoice, VOICE_MASAO } from "../engine/sfx.js";
+import { playSfx } from "../engine/sfx.js";
+import { CAST } from "../data/cast.js";
 import { getIntroSteps } from "../data/introScripts.js";
 
 /**
  * 導入会話シーン（会話スクリプトは js/data/introScripts.js で店舗ごとに定義）
- * 地の文・セリフを1つずつタップ/クリック/Enterで進める。「俺がまさおだ」演出、
+ * 地の文・セリフを1つずつタップ/クリック/Enterで進める。「ウラ、取らせてもらう」演出、
  * BATTLE START演出を経て context.onStartQuiz() を呼ぶ。スキップボタンで即座に
  * onStartQuiz() へ進める。
  *
@@ -15,9 +16,6 @@ import { getIntroSteps } from "../data/introScripts.js";
 export function mount(root, context) {
   const section = document.createElement("section");
   root.appendChild(section);
-
-  // 「俺がまさおだ」reveal 演出のボイスを、演出到達前に事前ロードしておく（発音遅延の防止）
-  preloadVoice(VOICE_MASAO);
 
   const storeName = context.selectedStore ? context.selectedStore.displayName : "赤坂 GitHub 店";
 
@@ -33,7 +31,6 @@ export function mount(root, context) {
 
   function goNext() {
     clearTimers();
-    stopVoice();
     index += 1;
     if (index >= steps.length) return;
     render(steps[index]);
@@ -43,18 +40,18 @@ export function mount(root, context) {
     section.className = "screen screen--dialogue";
     section.dataset.screen = "intro-dialogue";
     const isNarration = step.type === "narration";
-    const isMasao = step.type === "masao";
-    const isFake = step.type === "fake";
-    const speakerLabel = isMasao ? "まさお" : isFake ? "偽まさお" : "";
-    // まさおは右端、偽まさおは左端にラベルを配置
-    const speakerClass = isMasao ? "dialogue-box__speaker--masao" : "dialogue-box__speaker--fake";
+    const isHero = step.type === "hero";
+    const isRival = step.type === "rival";
+    const speakerLabel = isHero ? CAST.hero.name : isRival ? CAST.rival.name : "";
+    // 主人公は右端、ライバルは左端にラベルを配置
+    const speakerClass = isHero ? "dialogue-box__speaker--hero" : "dialogue-box__speaker--rival";
     const textContent = isNarration ? step.text : `「${step.text}」`;
 
     section.innerHTML = `
       <div class="sauna-bg" aria-hidden="true"></div>
       <div class="dialogue-cast" aria-hidden="true">
-        <img class="portrait portrait--fake ${isFake ? "is-active" : "is-dim"}" src="assets/images/nisemasao.jpg" alt="">
-        <img class="portrait portrait--masao ${isMasao ? "is-active" : "is-dim"}" src="assets/images/masao.jpg" alt="">
+        <img class="portrait portrait--rival ${isRival ? "is-active" : "is-dim"}" src="${CAST.rival.image}" alt="">
+        <img class="portrait portrait--hero ${isHero ? "is-active" : "is-dim"}" src="${CAST.hero.image}" alt="">
       </div>
       <button type="button" class="btn btn--ghost dialogue-skip">スキップ</button>
       <div class="dialogue-box" role="button" tabindex="0" aria-label="タップして次へ">
@@ -88,8 +85,8 @@ export function mount(root, context) {
   }
 
   function renderRevealStep() {
-    section.className = "screen screen--masao-reveal";
-    section.dataset.screen = "masao-reveal";
+    section.className = "screen screen--reveal";
+    section.dataset.screen = "reveal";
     section.innerHTML = `
       <div class="steam-bg is-frozen" aria-hidden="true">
         <span class="steam-blob steam-blob--1"></span>
@@ -97,11 +94,12 @@ export function mount(root, context) {
         <span class="steam-blob steam-blob--3"></span>
       </div>
       <button type="button" class="btn btn--ghost dialogue-skip">スキップ</button>
-      <div class="masao-flash" aria-hidden="true"></div>
-      <h2 class="masao-text">俺がまさおだ</h2>
+      <img class="reveal-portrait" src="${CAST.hero.image}" alt="" aria-hidden="true">
+      <div class="reveal-flash" aria-hidden="true"></div>
+      <h2 class="reveal-text">${escapeHtml(CAST.hero.revealLine)}</h2>
     `;
-    const flash = section.querySelector(".masao-flash");
-    const text = section.querySelector(".masao-text");
+    const flash = section.querySelector(".reveal-flash");
+    const text = section.querySelector(".reveal-text");
     const skipBtn = section.querySelector(".dialogue-skip");
 
     let advanced = false;
@@ -114,7 +112,7 @@ export function mount(root, context) {
     pendingTimers.push(window.setTimeout(() => flash.classList.add("is-flashing"), 500));
     pendingTimers.push(window.setTimeout(() => {
       text.classList.add("is-revealed");
-      playVoice(VOICE_MASAO);
+      playSfx("reveal");
     }, 550));
     pendingTimers.push(window.setTimeout(() => text.classList.add("is-glowing"), 1050));
     pendingTimers.push(window.setTimeout(advance, 2200));
@@ -161,7 +159,6 @@ export function mount(root, context) {
   return {
     unmount() {
       clearTimers();
-      stopVoice();
       section.remove();
     },
   };

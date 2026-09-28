@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { stores } from "../js/data/stores.js";
 import { getIntroSteps, scriptsByStoreId } from "../js/data/introScripts.js";
 
-const DIALOGUE_TYPES = new Set(["narration", "masao", "fake"]);
+const DIALOGUE_TYPES = new Set(["narration", "hero", "rival"]);
 const TEMP_MODES = ["80", "110"];
 
 test("全店舗×両温度でイントロスクリプトが構造制約を満たす", () => {

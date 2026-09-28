@@ -20,8 +20,8 @@ const { nextQuizSet, resetRotation } = await import("../js/engine/rotation.js");
 const { githubQuestions } = await import("../js/data/questions-github.js");
 
 const POOL_ID = "github";
-const correctIds = githubQuestions.filter((q) => q.isFakeMasaoCorrect === true).map((q) => q.id);
-const incorrectIds = githubQuestions.filter((q) => q.isFakeMasaoCorrect === false).map((q) => q.id);
+const correctIds = githubQuestions.filter((q) => q.isRivalCorrect === true).map((q) => q.id);
+const incorrectIds = githubQuestions.filter((q) => q.isRivalCorrect === false).map((q) => q.id);
 
 beforeEach(() => {
   store.clear();
@@ -31,8 +31,8 @@ beforeEach(() => {
 test("1回の出題は 正答3＋誤答7 の計10問", () => {
   const set = nextQuizSet(githubQuestions, POOL_ID);
   assert.equal(set.length, 10, "10問ではない");
-  const c = set.filter((q) => q.isFakeMasaoCorrect === true).length;
-  const i = set.filter((q) => q.isFakeMasaoCorrect === false).length;
+  const c = set.filter((q) => q.isRivalCorrect === true).length;
+  const i = set.filter((q) => q.isRivalCorrect === false).length;
   assert.equal(c, 3, "正答が3問でない");
   assert.equal(i, 7, "誤答が7問でない");
 });
@@ -50,7 +50,7 @@ test("1周(正答3回/誤答3回分)でプール全体を重複なく巡回す�
   for (let i = 0; i < 3; i++) {
     const set = nextQuizSet(githubQuestions, POOL_ID);
     for (const q of set) {
-      if (q.isFakeMasaoCorrect) seenCorrect.push(q.id);
+      if (q.isRivalCorrect) seenCorrect.push(q.id);
       else seenIncorrect.push(q.id);
     }
   }
@@ -72,7 +72,7 @@ test("連続する2回の出題は（十分大きいプールでは）異なる�
 
 test("ローテーション状態はlocalStorageに永続化され、次の出題で継続する", () => {
   nextQuizSet(githubQuestions, POOL_ID);
-  const saved = store.get("oregamasao.rotation.v1." + POOL_ID);
+  const saved = store.get("neppa-ronpa.rotation.v1." + POOL_ID);
   assert.ok(saved, "ローテーション状態が保存されていない");
   const bags = JSON.parse(saved);
   // 正答9−3=6問、誤答21−7=14問が残りキューに残る

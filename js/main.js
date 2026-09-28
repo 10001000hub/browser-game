@@ -4,7 +4,7 @@ import { TEMP_CONFIG } from "./data/tempConfig.js";
 import { shuffleArray, isCorrectChoice } from "./engine/quizPicker.js";
 import { nextQuizSet } from "./engine/rotation.js";
 import { createTimer } from "./engine/timer.js";
-import { playSfx, playVoice, unlockAudio, isMuted, toggleMute, VOICE_MASAO } from "./engine/sfx.js";
+import { playSfx, unlockAudio, isMuted, toggleMute } from "./engine/sfx.js";
 import { getBestRemainingMs, recordClear } from "./engine/records.js";
 import * as titleScreen from "./screens/titleScreen.js";
 import * as storeSelectScreen from "./screens/storeSelectScreen.js";
@@ -202,7 +202,7 @@ function handleChoiceClick(text) {
   if (isFirstAttempt) {
     state.reviewLog[state.currentQuestionIndex] = {
       index: state.currentQuestionIndex + 1,
-      statement: question.fakeMasaoLine,
+      statement: question.rivalLine,
       firstAnswer: text,
       correctAnswer: question.correctChoice,
       isFirstAnswerCorrect: correct,
@@ -270,7 +270,7 @@ function continueSuccess() {
   state.timerController.revive(config.revivalMs);
   state.phase = "QUIZ";
   state.locked = false;
-  playVoice(VOICE_MASAO); // 復活時も「俺がまさおだ」ボイスを鳴らす
+  playSfx("revive");
   mountQuizScreen();
 }
 

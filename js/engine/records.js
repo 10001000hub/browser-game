@@ -9,7 +9,7 @@
  *   { [storeId]: { "80": number, "110": number } }   値はクリア時の残りms
  */
 
-const STORAGE_KEY = "oregamasao.records.v1";
+const STORAGE_KEY = "neppa-ronpa.records.v1";
 
 /**
  * 全記録を読み込む。未保存・壊れたデータ・非対応環境では空オブジェクトを返す。

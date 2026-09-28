@@ -38,10 +38,10 @@ export function mount(root, context) {
   const answeredCount = context.reviewLog.filter((entry) => Boolean(entry)).length;
 
   const icon = context.didWin ? "🏆" : "💦";
-  const title = context.didWin ? "証明完了" : "灼熱に敗れた……";
+  const title = context.didWin ? "論破完了" : "のぼせて退場……";
   const sub = context.didWin
-    ? "お前がまさおであることは証明された。"
-    : "耐久リングが尽きた。もう一度整え直せ。";
+    ? "ゴウ「……チッ。今日のところは、お前のウラ取りを認めてやる。」"
+    : "ゴウ「根拠が無きゃ、ただの熱気だぜ。」 整い場で答え合わせをしよう。";
 
   section.innerHTML = `
     <div class="result-icon">${icon}</div>

@@ -1,6 +1,22 @@
 import { escapeHtml } from "../engine/escapeHtml.js";
 
 /**
+ * 出典メモ中の https URL をリンクにする（それ以外はエスケープした文字列のまま）。
+ * @param {string} memo
+ * @returns {string}
+ */
+function sourceHtml(memo) {
+  return String(memo || "")
+    .split(/(https:\/\/[^\s　）)]+)/)
+    .map((part, i) =>
+      i % 2 === 1
+        ? `<a class="review-card__link" href="${escapeHtml(part)}" target="_blank" rel="noopener noreferrer">${escapeHtml(part)}</a>`
+        : escapeHtml(part),
+    )
+    .join("");
+}
+
+/**
  * 整い場（振り返り）画面
  * @param {HTMLElement} root
  * @param {{ reviewLog: (object|null|undefined)[], selectedStore?: import('../data/stores.js').Store, onReturnToTitle: () => void }} context
@@ -25,7 +41,7 @@ export function mount(root, context) {
                 <span class="review-card__no">Q${entry.index}</span>
                 ${badge}
               </header>
-              <p class="review-card__quote">「偽まさお」: ${escapeHtml(entry.statement)}</p>
+              <p class="review-card__quote">ゴウの発言: ${escapeHtml(entry.statement)}</p>
               <dl class="review-card__answers">
                 <dt>あなたの回答</dt><dd>${escapeHtml(entry.firstAnswer)}</dd>
                 <dt>正解</dt><dd>${escapeHtml(entry.correctAnswer)}</dd>
@@ -34,22 +50,17 @@ export function mount(root, context) {
               <div class="review-card__tags">
                 <span class="tag">${escapeHtml(entry.topic)}</span>
               </div>
-              <p class="review-card__source">出典: ${escapeHtml(entry.sourceMemo)}</p>
+              <p class="review-card__source">出典: ${sourceHtml(entry.sourceMemo)}</p>
             </article>
           `;
         })
         .join("")
     : '<p class="review-empty">記録なし。</p>';
 
-  const videoUrl = context.selectedStore && context.selectedStore.sourceVideoUrl;
-  const sourceVideoHtml = videoUrl
-    ? `<p class="review-source-video">この整い場の解説の元になった動画: <a class="review-source-video__link" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(videoUrl)}</a></p>`
-    : "";
 
   section.innerHTML = `
     <h2 class="screen-title">整い場</h2>
     <div class="review-list">${cardsHtml}</div>
-    ${sourceVideoHtml}
     <button type="button" class="btn btn--primary" data-action="to-title">タイトルへ戻る</button>
   `;
   root.appendChild(section);

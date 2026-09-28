@@ -1,3 +1,5 @@
+import { CAST } from "../data/cast.js";
+
 /**
  * タイトル画面
  * @param {HTMLElement} root
@@ -14,8 +16,13 @@ export function mount(root, context) {
       <span class="steam-blob steam-blob--2"></span>
       <span class="steam-blob steam-blob--3"></span>
     </div>
-    <h1 class="logo">俺がまさお</h1>
-    <p class="tagline">AIに関する最新情報や本質情報を<br>できる限り早くより深く</p>
+    <div class="title-cast" aria-hidden="true">
+      <img class="title-cast__rival" src="${CAST.rival.image}" alt="">
+      <img class="title-cast__hero" src="${CAST.hero.image}" alt="">
+    </div>
+    <h1 class="logo">熱波論破</h1>
+    <p class="logo-sub">サウナでAIのウソを見抜け</p>
+    <p class="tagline">熱波師ゴウの「それっぽいAI話」。<br>正しいか、どこが違うか。10問で見抜け。</p>
     <p class="prompt-text">今日はどのサウナに行く？</p>
     <button type="button" class="btn btn--primary tap-start">タップしてはじめる</button>
   `;

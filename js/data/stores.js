@@ -5,10 +5,10 @@
  * @property {string} id
  * @property {string} displayName
  * @property {string} themeName
+ * @property {string} icon - 店舗カードに出す絵文字
  * @property {string} description
  * @property {"available"|"coming-soon"} status
  * @property {string} questionPoolId
- * @property {string} [sourceVideoUrl] - 整い場に表示する解説元動画のURL（任意）
  *
  * @type {Store[]}
  */
@@ -17,7 +17,8 @@ export const stores = [
     id: "github",
     displayName: "赤坂 GitHub 店",
     themeName: "GitHub",
-    description: "今日入れる唯一の湯。GitHubの基本を叩き込む。",
+    icon: "🌱",
+    description: "リポジトリ、ブランチ、プルリクエスト。共同開発の基本を蒸し込む。",
     status: "available",
     questionPoolId: "github",
   },
@@ -25,49 +26,54 @@ export const stores = [
     id: "orca",
     displayName: "銀座 Orca 店",
     themeName: "Orca",
-    description: "オルカ編。複数AIを束ねるIDE「Orca」の要点を蒸し込む。",
+    icon: "🐋",
+    description: "複数のAIエージェントを並べて走らせる開発環境「Orca」の要点。",
     status: "available",
     questionPoolId: "orca",
-    sourceVideoUrl: "https://youtu.be/iq5po7h8nYc?si=Ix4VSFTw-_xTYmJq",
   },
   {
     id: "prompt-engineering",
-    displayName: "六本木 プロンプトエンジニアリング店",
+    displayName: "六本木 プロンプト店",
     themeName: "プロンプトエンジニアリング",
-    description: "準備中のサウナ。",
-    status: "coming-soon",
+    icon: "✍️",
+    description: "AIへの頼み方。明確さ・例・構造の3つで整える。",
+    status: "available",
     questionPoolId: "prompt-engineering",
   },
   {
     id: "claude-code",
     displayName: "新宿 Claude Code 店",
     themeName: "Claude Code",
-    description: "準備中のサウナ。",
-    status: "coming-soon",
+    icon: "⌨️",
+    description: "ターミナルで働くAI。設定ファイル・権限・コマンドを押さえる。",
+    status: "available",
     questionPoolId: "claude-code",
   },
   {
     id: "wsl",
     displayName: "渋谷 WSL 店",
     themeName: "WSL",
-    description: "準備中のサウナ。",
-    status: "coming-soon",
+    icon: "🐧",
+    description: "WindowsでLinuxを動かす仕組みと、ファイルの置き場所。",
+    status: "available",
     questionPoolId: "wsl",
   },
   {
     id: "obsidian",
-    displayName: "銀座 Obsidian 店",
+    displayName: "神田 Obsidian 店",
     themeName: "Obsidian",
-    description: "準備中のサウナ。",
-    status: "coming-soon",
+    icon: "🗂️",
+    description: "手元のMarkdownでつくる、つながるノート。",
+    status: "available",
     questionPoolId: "obsidian",
   },
   {
     id: "ai-agent",
     displayName: "虎ノ門 AIエージェント店",
     themeName: "AIエージェント",
-    description: "準備中のサウナ。",
-    status: "coming-soon",
+    icon: "🤖",
+    description: "AIに仕事を任せる設計。シンプルに始めて、測って足す。",
+    status: "available",
     questionPoolId: "ai-agent",
   },
 ];

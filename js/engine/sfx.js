@@ -7,7 +7,7 @@
  * ミュート状態は localStorage に永続化する。
  */
 
-const STORAGE_KEY = "oregamasao.muted";
+const STORAGE_KEY = "neppa-ronpa.muted";
 
 /** @type {AudioContext|null} */
 let audioCtx = null;
@@ -105,7 +105,7 @@ function tonesFor(name) {
       return [
         { at: 0, type: "sawtooth", freq: 196, endFreq: 92, duration: 0.24, gain: 0.16 },
       ];
-    // 「俺がまさおだ」演出: 重い一撃＋高音のシャキーン
+    // 「ウラ、取らせてもらう」演出: 重い一撃＋高音のシャキーン
     case "reveal":
       return [
         { at: 0, type: "sine", freq: 130, endFreq: 55, duration: 0.55, gain: 0.3 },
@@ -123,6 +123,13 @@ function tonesFor(name) {
     case "timeout":
       return [
         { at: 0, type: "sawtooth", freq: 440, endFreq: 110, duration: 0.6, gain: 0.2 },
+      ];
+    // コンティニュー成功（復活）: 湯気を切り裂く上昇スイープ＋決めの和音
+    case "revive":
+      return [
+        { at: 0, type: "sawtooth", freq: 220, endFreq: 880, duration: 0.32, gain: 0.12 },
+        { at: 0.3, type: "triangle", freq: 784, duration: 0.3, gain: 0.2 },
+        { at: 0.3, type: "triangle", freq: 1175, duration: 0.3, gain: 0.14 },
       ];
     // コンティニュー連打: 短い打点
     case "mash":
@@ -151,7 +158,7 @@ function tonesFor(name) {
 
 /**
  * 効果音を再生する。ミュート時・未定義名・非対応環境では何もしない。
- * @param {string} name - correct / incorrect / reveal / battleStart / timeout / mash / win / lose
+ * @param {string} name - correct / incorrect / reveal / battleStart / timeout / revive / mash / win / lose
  */
 export function playSfx(name) {
   if (muted) return;
@@ -164,76 +171,6 @@ export function playSfx(name) {
   const now = ctx.currentTime;
   for (const spec of specs) {
     scheduleTone(ctx, now + spec.at, spec);
-  }
-}
-
-/**
- * ボイスクリップ（外部音源ファイル）のパス。全ブラウザ再生互換のため MP4/AAC を使用。
- * 「俺がまさおだ」演出とコンティニュー復活時に共用する。
- */
-export const VOICE_MASAO = "assets/audio/osumasaodesu.mp4";
-
-/** @type {HTMLAudioElement|null} 再生中のボイス（多重再生を防ぐため単一参照で管理） */
-let voiceAudio = null;
-
-/** @type {Map<string, HTMLAudioElement>} プリロード済みボイス要素（即時再生のため再利用する） */
-const voiceCache = new Map();
-
-/**
- * ボイスクリップを事前ロードしておき、後続の {@link playVoice} を即時発音にする。
- * 再生直前ではなく、余裕のあるタイミング（対象画面のマウント時など）で呼ぶこと。
- * ミュートに関係なくロードだけ行う（実際の発音は playVoice が判定する）。
- * @param {string} src
- */
-export function preloadVoice(src) {
-  if (typeof Audio === "undefined") return;
-  if (voiceCache.has(src)) return;
-  try {
-    const el = new Audio(src);
-    el.preload = "auto";
-    el.load();
-    voiceCache.set(src, el);
-  } catch (_e) {
-    /* noop */
-  }
-}
-
-/**
- * ボイスクリップを再生する。ミュート時・Audio 非対応環境（jsdom 等）では何もしない。
- * 再生中の別ボイスがあれば停止してから再生する。
- * @param {string} src
- */
-export function playVoice(src) {
-  stopVoice();
-  if (muted || typeof Audio === "undefined") return;
-  try {
-    let el = voiceCache.get(src);
-    if (!el) {
-      el = new Audio(src);
-      voiceCache.set(src, el);
-    }
-    try {
-      el.currentTime = 0;
-    } catch (_e) {
-      /* 未ロード等で seek 不可なら無視 */
-    }
-    voiceAudio = el;
-    const p = el.play();
-    if (p && typeof p.catch === "function") p.catch(() => {});
-  } catch (_e) {
-    voiceAudio = null;
-  }
-}
-
-/** 再生中のボイスを停止する。 */
-export function stopVoice() {
-  if (voiceAudio) {
-    try {
-      voiceAudio.pause();
-    } catch (_e) {
-      /* noop */
-    }
-    voiceAudio = null;
   }
 }
 

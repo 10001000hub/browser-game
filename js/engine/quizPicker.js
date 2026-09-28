@@ -27,8 +27,8 @@ export function shuffleArray(array) {
  * @returns {import('../data/questions-github.js').GithubQuestion[]}
  */
 export function selectTenQuestions(pool) {
-  const correctPool = pool.filter((q) => q.isFakeMasaoCorrect === true);
-  const incorrectPool = pool.filter((q) => q.isFakeMasaoCorrect === false);
+  const correctPool = pool.filter((q) => q.isRivalCorrect === true);
+  const incorrectPool = pool.filter((q) => q.isRivalCorrect === false);
 
   let takeCorrect = Math.min(TARGET_CORRECT, correctPool.length);
   let takeIncorrect = Math.min(TARGET_INCORRECT, incorrectPool.length);
